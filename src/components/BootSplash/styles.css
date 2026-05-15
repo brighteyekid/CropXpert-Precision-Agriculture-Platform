@@ -1,0 +1,105 @@
+/* ──────────────────────────────────────────
+   BootSplash — app launch screen
+   ────────────────────────────────────────── */
+
+.boot-splash {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: #1a2b1e;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    /* Wipe exit: slides upward off-screen */
+    transform: translateY(0);
+    transition: transform 0.4s cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+.boot-splash--wipe {
+    transform: translateY(-100%);
+}
+
+/* Center content */
+.boot-splash__center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+}
+
+/* Wordmark */
+.boot-splash__wordmark {
+    font-family: var(--font-display);
+    font-size: 48px;
+    font-weight: 500;
+    color: #f0ede4;
+    letter-spacing: -0.02em;
+    display: block;
+    line-height: 1;
+}
+
+.boot-splash__x {
+    color: var(--color-green-accent);
+}
+
+.boot-splash__tagline {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: rgba(240, 237, 228, 0.4);
+    display: block;
+    margin-top: 20px;
+}
+
+/* Scan-line loader */
+.boot-splash__loader {
+    margin-top: 40px;
+    display: flex;
+    justify-content: center;
+}
+
+/* Track — 120px wide, 1px, cream at 20% */
+.boot-splash__track {
+    width: 120px;
+    height: 1px;
+    background: rgba(240, 237, 228, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Bright scan segment — 30px, animates L→R and loops */
+.boot-splash__scan {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 30px;
+    height: 1px;
+    background: rgba(240, 237, 228, 1);
+    animation: scan-move 1.2s linear infinite;
+}
+
+@keyframes scan-move {
+    0% {
+        transform: translateX(-30px);
+    }
+
+    100% {
+        transform: translateX(120px);
+    }
+}
+
+/* Institutional footer — pinned bottom */
+.boot-splash__footer {
+    position: absolute;
+    bottom: 40px;
+    font-family: var(--font-mono);
+    font-size: 8px;
+    font-weight: 300;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(240, 237, 228, 0.2);
+    text-align: center;
+}

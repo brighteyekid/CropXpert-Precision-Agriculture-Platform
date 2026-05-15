@@ -1,0 +1,1753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CropXpert — Precision Agriculture Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=Figtree:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+  :root {
+    --cream: #F8F4EE;
+    --warm-white: #FDFBF8;
+    --sage: #7A9E7E;
+    --sage-light: #A8C5A0;
+    --sage-dark: #4A7A50;
+    --earth: #8B6F47;
+    --earth-light: #C4A882;
+    --charcoal: #1C2B1E;
+    --charcoal-mid: #2E4230;
+    --ink: #0F1A10;
+    --amber: #D4A853;
+    --amber-light: #EDD38A;
+    --mist: #E8EDE8;
+    --teal: #3D7A72;
+    --rust: #B85C38;
+    --line: rgba(28,43,30,0.12);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Figtree', sans-serif;
+    background: var(--cream);
+    color: var(--charcoal);
+    overflow-x: hidden;
+  }
+
+  /* PROGRESS BAR */
+  #progress-bar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--sage-dark), var(--amber));
+    z-index: 1000;
+    width: 0%;
+    transition: width 0.1s ease;
+  }
+
+  /* NAV DOTS */
+  #nav-dots {
+    position: fixed;
+    right: 28px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .nav-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: rgba(28,43,30,0.2);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+  .nav-dot.active { background: var(--sage-dark); transform: scale(1.5); }
+  .nav-dot:hover { background: var(--sage); }
+  .nav-dot-label {
+    position: absolute;
+    right: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--charcoal);
+    opacity: 0;
+    white-space: nowrap;
+    transition: opacity 0.2s;
+    pointer-events: none;
+    letter-spacing: 0.05em;
+  }
+  .nav-dot:hover .nav-dot-label { opacity: 1; }
+
+  /* SECTIONS */
+  .slide {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    padding: 80px 120px 80px 100px;
+    overflow: hidden;
+  }
+  .slide:nth-child(even) { background: var(--warm-white); }
+  .slide:nth-child(odd) { background: var(--cream); }
+
+  /* SLIDE NUMBERS */
+  .slide-number {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--earth-light);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  /* SECTION LABELS */
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--sage-dark);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-label::after {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 1px;
+    background: var(--sage-dark);
+  }
+
+  /* HEADINGS */
+  h1.hero-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(52px, 6vw, 88px);
+    line-height: 1.0;
+    color: var(--charcoal);
+    letter-spacing: -0.02em;
+  }
+  h1.hero-title em {
+    font-style: italic;
+    color: var(--sage-dark);
+  }
+  h2.slide-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(32px, 4vw, 52px);
+    line-height: 1.1;
+    color: var(--charcoal);
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+  }
+  h2.slide-title em { font-style: italic; color: var(--sage-dark); }
+  h3.sub-title {
+    font-family: 'Figtree', sans-serif;
+    font-weight: 300;
+    font-size: 18px;
+    color: var(--charcoal-mid);
+    margin-bottom: 40px;
+    line-height: 1.5;
+  }
+
+  /* LAYOUT GRIDS */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 32px; }
+
+  /* CARDS */
+  .card {
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    padding: 32px;
+    position: relative;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px; height: 100%;
+    background: var(--sage);
+  }
+  .card.amber::before { background: var(--amber); }
+  .card.earth::before { background: var(--earth); }
+  .card.teal::before { background: var(--teal); }
+
+  .card-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--sage-dark);
+    margin-bottom: 12px;
+  }
+  .card h4 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    color: var(--charcoal);
+    margin-bottom: 12px;
+  }
+  .card p {
+    font-size: 14px;
+    line-height: 1.7;
+    color: #4A5C4C;
+    font-weight: 300;
+  }
+
+  /* STAT BLOCKS */
+  .stat-block {
+    border-top: 2px solid var(--charcoal);
+    padding-top: 20px;
+  }
+  .stat-number {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(36px, 4vw, 56px);
+    color: var(--charcoal);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .stat-unit {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--sage-dark);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+  .stat-desc {
+    font-size: 13px;
+    color: #5A6C5C;
+    margin-top: 4px;
+    font-weight: 300;
+  }
+
+  /* BODY TEXT */
+  .body-text {
+    font-size: 16px;
+    line-height: 1.8;
+    color: #3A4C3C;
+    font-weight: 300;
+    max-width: 640px;
+  }
+  .body-text strong { font-weight: 600; color: var(--charcoal); }
+
+  /* TAG PILLS */
+  .tag {
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    color: var(--charcoal-mid);
+    margin: 4px 4px 0 0;
+    background: rgba(122,158,126,0.08);
+  }
+
+  /* DIVIDER */
+  .hr { width: 48px; height: 2px; background: var(--sage); margin: 24px 0; }
+
+  /* THREEJS CANVAS WRAPPER */
+  .threejs-panel {
+    position: relative;
+    border-radius: 2px;
+    overflow: hidden;
+    background: var(--charcoal);
+  }
+  #hardware-canvas { display: block; width: 100%; height: 420px; }
+
+  /* HERO SECTION */
+  #slide-1 {
+    background: var(--charcoal) !important;
+    color: var(--cream);
+  }
+  #slide-1 h1.hero-title { color: var(--cream); }
+  #slide-1 h1.hero-title em { color: var(--sage-light); }
+  #slide-1 .section-label { color: var(--sage-light); }
+  #slide-1 .section-label::after { background: var(--sage-light); }
+  #slide-1 .body-text { color: rgba(248,244,238,0.75); }
+  #slide-1 .hr { background: var(--sage-light); }
+
+  /* HERO BG CANVAS */
+  #hero-bg-canvas {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    opacity: 0.35;
+    pointer-events: none;
+  }
+
+  /* HERO META ROW */
+  .hero-meta {
+    display: flex;
+    gap: 40px;
+    margin-top: 48px;
+    flex-wrap: wrap;
+  }
+  .hero-meta-item {
+    border-left: 2px solid rgba(168,197,160,0.4);
+    padding-left: 16px;
+  }
+  .hero-meta-item .label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--sage-light);
+    margin-bottom: 4px;
+  }
+  .hero-meta-item .value {
+    font-size: 13px;
+    color: rgba(248,244,238,0.9);
+    font-weight: 400;
+  }
+
+  /* FEATURE ROW */
+  .feature-row {
+    display: grid;
+    grid-template-columns: 56px 1fr;
+    gap: 20px;
+    align-items: start;
+    padding: 24px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .feature-row:first-child { border-top: 1px solid var(--line); }
+  .feature-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--earth-light);
+    padding-top: 3px;
+  }
+  .feature-content h4 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 18px;
+    color: var(--charcoal);
+    margin-bottom: 6px;
+  }
+  .feature-content p {
+    font-size: 14px;
+    color: #4A5C4C;
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  /* BIG QUOTE */
+  .big-quote {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(22px, 3vw, 34px);
+    line-height: 1.4;
+    color: var(--charcoal);
+    font-style: italic;
+    border-left: 4px solid var(--sage);
+    padding-left: 32px;
+    max-width: 760px;
+  }
+
+  /* ACCURACY METER */
+  .accuracy-ring-wrap {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+  }
+  .ring-svg { width: 160px; height: 160px; flex-shrink: 0; }
+
+  /* TABLE */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .data-table th {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--sage-dark);
+    padding: 10px 16px;
+    border-bottom: 2px solid var(--charcoal);
+    text-align: left;
+  }
+  .data-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--line);
+    color: var(--charcoal-mid);
+    font-weight: 300;
+  }
+  .data-table tr:hover td { background: rgba(122,158,126,0.05); }
+  .data-table .highlight { font-weight: 600; color: var(--charcoal); }
+  .data-table .badge {
+    display: inline-block;
+    background: var(--sage);
+    color: white;
+    font-size: 9px;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.1em;
+    padding: 2px 8px;
+    border-radius: 2px;
+  }
+
+  /* SCORE BARS */
+  .score-bar-wrap { margin: 12px 0; }
+  .score-bar-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    font-family: 'DM Mono', monospace;
+    color: var(--charcoal-mid);
+    margin-bottom: 6px;
+  }
+  .score-bar {
+    height: 6px;
+    background: var(--mist);
+    border-radius: 0;
+    overflow: hidden;
+  }
+  .score-bar-fill {
+    height: 100%;
+    background: var(--sage);
+    transition: width 1.5s cubic-bezier(0.16,1,0.3,1);
+    width: 0;
+  }
+  .score-bar-fill.amber { background: var(--amber); }
+  .score-bar-fill.earth { background: var(--earth); }
+
+  /* FORMULA BOX */
+  .formula-box {
+    background: var(--charcoal);
+    color: var(--cream);
+    padding: 28px 36px;
+    font-family: 'DM Mono', monospace;
+    font-size: 15px;
+    border-radius: 2px;
+    letter-spacing: 0.02em;
+    line-height: 1.8;
+  }
+  .formula-box .var { color: var(--sage-light); }
+  .formula-box .coeff { color: var(--amber-light); }
+  .formula-box .comment { color: rgba(248,244,238,0.4); font-size: 12px; }
+
+  /* ROADMAP TIMELINE */
+  .timeline { position: relative; padding-left: 40px; }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 8px; top: 0; bottom: 0;
+    width: 2px;
+    background: var(--line);
+  }
+  .timeline-item {
+    position: relative;
+    margin-bottom: 32px;
+  }
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -36px; top: 6px;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    border: 2px solid var(--sage);
+    background: var(--cream);
+  }
+  .timeline-item.done::before {
+    background: var(--sage);
+  }
+  .timeline-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--sage-dark);
+    margin-bottom: 4px;
+  }
+  .timeline-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 18px;
+    color: var(--charcoal);
+    margin-bottom: 6px;
+  }
+  .timeline-desc {
+    font-size: 13px;
+    color: #5A6C5C;
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  /* SCHEME CARDS */
+  .scheme-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .scheme-card {
+    background: white;
+    border: 1px solid var(--line);
+    padding: 20px 24px;
+    border-radius: 2px;
+  }
+  .scheme-card .tag { margin: 0 0 10px 0; }
+  .scheme-card h5 {
+    font-family: 'Figtree', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--charcoal);
+    margin-bottom: 6px;
+  }
+  .scheme-card p {
+    font-size: 12px;
+    color: #5A6C5C;
+    line-height: 1.5;
+    font-weight: 300;
+  }
+
+  /* FINAL SLIDE */
+  #slide-11 {
+    background: var(--charcoal) !important;
+    color: var(--cream);
+  }
+  #slide-11 h2.slide-title { color: var(--cream); }
+  #slide-11 .hr { background: var(--sage-light); }
+  #slide-11 .body-text { color: rgba(248,244,238,0.7); }
+  #slide-11 .section-label { color: var(--sage-light); }
+  #slide-11 .section-label::after { background: var(--sage-light); }
+
+  /* ANIMATION CLASSES */
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+  .reveal-delay-4 { transition-delay: 0.4s; }
+  .reveal-delay-5 { transition-delay: 0.5s; }
+
+  /* DECORATIVE ELEMENTS */
+  .corner-mark {
+    position: absolute;
+    bottom: 40px;
+    right: 120px;
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: rgba(28,43,30,0.25);
+  }
+  #slide-1 .corner-mark, #slide-11 .corner-mark { color: rgba(248,244,238,0.25); }
+
+  /* COMPARISON TABLE SECTION */
+  .comp-row {
+    display: flex;
+    border-bottom: 1px solid var(--line);
+    font-size: 13px;
+  }
+  .comp-row:first-child { border-top: 1px solid var(--line); }
+  .comp-cell {
+    flex: 1;
+    padding: 14px 20px;
+    font-weight: 300;
+    color: #4A5C4C;
+    display: flex;
+    align-items: center;
+  }
+  .comp-cell:first-child {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--charcoal);
+    font-weight: 500;
+    max-width: 200px;
+    flex: 0 0 200px;
+  }
+  .comp-cell .yes { color: var(--sage-dark); font-weight: 600; }
+  .comp-cell .no { color: var(--earth-light); font-weight: 400; }
+  .comp-cell .cropxpert-col { background: rgba(122,158,126,0.08); }
+  .col-header {
+    display: flex;
+    border-bottom: 2px solid var(--charcoal);
+  }
+  .col-header-cell {
+    flex: 1;
+    padding: 10px 20px;
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--sage-dark);
+  }
+  .col-header-cell:first-child { max-width: 200px; flex: 0 0 200px; }
+  .col-header-cell.highlight { color: var(--sage-dark); font-weight: 600; background: rgba(122,158,126,0.06); }
+
+  /* BOM TABLE */
+  .bom-row {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid var(--line);
+    padding: 12px 0;
+  }
+  .bom-name {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 300;
+    color: var(--charcoal-mid);
+  }
+  .bom-cost {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--charcoal);
+    min-width: 80px;
+    text-align: right;
+  }
+  .bom-bar-wrap {
+    width: 180px;
+    margin: 0 20px;
+  }
+  .bom-bar-track {
+    height: 4px;
+    background: var(--mist);
+  }
+  .bom-bar-fill {
+    height: 4px;
+    background: var(--earth-light);
+    transition: width 1.5s cubic-bezier(0.16,1,0.3,1);
+    width: 0;
+  }
+</style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<!-- Navigation dots -->
+<nav id="nav-dots" aria-label="Section navigation">
+  <div class="nav-dot active" data-slide="0"><span class="nav-dot-label">Title</span></div>
+  <div class="nav-dot" data-slide="1"><span class="nav-dot-label">Problem</span></div>
+  <div class="nav-dot" data-slide="2"><span class="nav-dot-label">Hardware</span></div>
+  <div class="nav-dot" data-slide="3"><span class="nav-dot-label">ML Engine</span></div>
+  <div class="nav-dot" data-slide="4"><span class="nav-dot-label">Market Intel</span></div>
+  <div class="nav-dot" data-slide="5"><span class="nav-dot-label">Architecture</span></div>
+  <div class="nav-dot" data-slide="6"><span class="nav-dot-label">Farmer Portal</span></div>
+  <div class="nav-dot" data-slide="7"><span class="nav-dot-label">CropBot</span></div>
+  <div class="nav-dot" data-slide="8"><span class="nav-dot-label">Comparison</span></div>
+  <div class="nav-dot" data-slide="9"><span class="nav-dot-label">Roadmap</span></div>
+  <div class="nav-dot" data-slide="10"><span class="nav-dot-label">Vision</span></div>
+</nav>
+
+
+<!-- =========================================
+     SLIDE 1: TITLE
+========================================= -->
+<section class="slide" id="slide-1">
+  <canvas id="hero-bg-canvas"></canvas>
+  <div style="position:relative;z-index:2;max-width:900px;">
+    <div class="section-label reveal">Minor Project — CINTEL Dept. — SRMIST Kattankulathur — 2024–25</div>
+    <h1 class="hero-title reveal reveal-delay-1">
+      Crop<em>Xpert</em>
+    </h1>
+    <div class="hr reveal reveal-delay-2"></div>
+    <p class="body-text reveal reveal-delay-3" style="color:rgba(248,244,238,0.8);font-size:20px;max-width:620px;margin-bottom:40px;">
+      An IoT-Enabled, Machine Learning-Driven Precision Agriculture Platform with Multilingual Farmer Support Portal
+    </p>
+    <div class="hero-meta reveal reveal-delay-4">
+      <div class="hero-meta-item">
+        <div class="label">Team</div>
+        <div class="value">Adnan Nagdiwala &middot; Chandra Bhayal</div>
+      </div>
+      <div class="hero-meta-item">
+        <div class="label">Guide</div>
+        <div class="value">Dr. R. Siva</div>
+      </div>
+      <div class="hero-meta-item">
+        <div class="label">Domain</div>
+        <div class="value">IoT &middot; Machine Learning &middot; Web Dev</div>
+      </div>
+      <div class="hero-meta-item">
+        <div class="label">Accuracy</div>
+        <div class="value">99.2% across 22 crops</div>
+      </div>
+    </div>
+  </div>
+  <div class="corner-mark">CropXpert — CINTEL — SRMIST</div>
+</section>
+
+
+<!-- =========================================
+     SLIDE 2: PROBLEM
+========================================= -->
+<section class="slide" id="slide-2">
+  <div class="slide-number reveal">02 / 11</div>
+  <div class="section-label reveal reveal-delay-1">The Problem</div>
+  <h2 class="slide-title reveal reveal-delay-1">
+    India's farmers are flying <em>blind</em>
+  </h2>
+  <p class="body-text reveal reveal-delay-2" style="margin-bottom:48px;">
+    Agriculture sustains <strong>600 million</strong> people yet India's rice yield (2.6 t/ha) is barely half the global average (4.6 t/ha). The gap is not land — it is knowledge.
+  </p>
+
+  <div class="grid-3 reveal reveal-delay-3">
+    <div class="stat-block">
+      <div class="stat-number">86%</div>
+      <div class="stat-unit">Smallholders</div>
+      <div class="stat-desc">of India's 146 million farm holdings cultivate 2 hectares or less — with near-zero access to agri advisory</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-number">74%</div>
+      <div class="stat-unit">Non-English literate</div>
+      <div class="stat-desc">of India's agricultural workforce cannot read English — blocking access to all digital advisory tools</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-number">31%</div>
+      <div class="stat-unit">Villages offline</div>
+      <div class="stat-desc">of Indian villages lack reliable 4G coverage — internet-dependent apps simply do not reach them</div>
+    </div>
+  </div>
+
+  <div style="margin-top:48px;" class="reveal reveal-delay-4">
+    <p class="body-text" style="margin-bottom:16px;">Three persistent gaps no existing system solves together:</p>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;">
+      <div class="tag">No real-time soil sensing</div>
+      <div class="tag">No market price awareness</div>
+      <div class="tag">No vernacular interface</div>
+      <div class="tag">No offline access</div>
+      <div class="tag">No welfare scheme guidance</div>
+    </div>
+  </div>
+  <div class="corner-mark">CropXpert — The Problem</div>
+</section>
+
+
+<!-- =========================================
+     SLIDE 3: HARDWARE
+========================================= -->
+<section class="slide" id="slide-3">
+  <div class="slide-number reveal">03 / 11</div>
+  <div class="section-label reveal reveal-delay-1">Hardware Module</div>
+  <h2 class="slide-title reveal reveal-delay-1">Field-grade sensing at <em>INR 3,600</em></h2>
+  <p class="body-text reveal reveal-delay-2" style="margin-bottom:36px;">
+    A four-sensor array on Arduino UNO / ESP32 measures everything the ML model needs — in seconds, not lab weeks.
+  </p>
+
+  <div class="grid-2 reveal reveal-delay-3">
+    <div>
+      <!-- THREE.JS HARDWARE VISUALIZATION -->
+      <div class="threejs-panel">
+        <canvas id="hardware-canvas"></canvas>
+      </div>
+    </div>
+    <div>
+      <div class="feature-row reveal reveal-delay-2">
+        <div class="feature-num">S-01</div>
+        <div class="feature-content">
+          <h4>RS485 NPK Sensor</h4>
+          <p>Modbus RTU via MAX485 converter. Reads Nitrogen, Phosphorus, Potassium in mg/kg. Range 0–1999, accuracy ±2%. Replaces laboratory testing at 1/500th the cost.</p>
+        </div>
+      </div>
+      <div class="feature-row reveal reveal-delay-3">
+        <div class="feature-num">S-02</div>
+        <div class="feature-content">
+          <h4>Analog Soil pH Sensor</h4>
+          <p>0–14 pH range, ±0.1 resolution. Analog input on Arduino pin A0. Identifies acid/alkaline imbalance before planting.</p>
+        </div>
+      </div>
+      <div class="feature-row reveal reveal-delay-4">
+        <div class="feature-num">S-03</div>
+        <div class="feature-content">
+          <h4>Capacitive Moisture Sensor</h4>
+          <p>Volumetric water content 0–100%. Capacitive design — no corrosion in field conditions. Longer field life than resistive types.</p>
+        </div>
+      </div>
+      <div class="feature-row reveal reveal-delay-5">
+        <div class="feature-num">S-04</div>
+        <div class="feature-content">
+          <h4>DHT22 Temp / Humidity</h4>
+          <p>±0.5°C temperature, ±2–5% humidity. Rainfall auto-fetched from OpenWeatherMap API using farmer GPS — no manual entry.</p>
+        </div>
+      </div>
+
+      <!-- BOM -->
+      <div style="margin-top:24px;">
+        <div class="bom-row reveal reveal-delay-2">
+          <div class="bom-name">Arduino UNO</div>
+          <div class="bom-bar-wrap"><div class="bom-bar-track"><div class="bom-bar-fill" data-width="22"></div></div></div>
+          <div class="bom-cost">400</div>
+        </div>
+        <div class="bom-row reveal reveal-delay-2">
+          <div class="bom-name">NPK Sensor (RS485)</div>
+          <div class="bom-bar-wrap"><div class="bom-bar-track"><div class="bom-bar-fill" data-width="100"></div></div></div>
+          <div class="bom-cost">1,800</div>
+        </div>
+        <div class="bom-row reveal reveal-delay-3">
+          <div class="bom-name">Soil pH Sensor</div>
+          <div class="bom-bar-wrap"><div class="bom-bar-track"><div class="bom-bar-fill" data-width="28"></div></div></div>
+          <div class="bom-cost">500</div>
+        </div>
+        <div class="bom-row reveal reveal-delay-3">
+          <div class="bom-name">Capacitive Moisture</div>
+          <div class="bom-bar-wrap"><div class="bom-bar-track"><div class="bom-bar-fill" data-width="8"></div></div></div>
+          <div class="bom-cost">150</div>
+        </div>
+        <div class="bom-row reveal reveal-delay-4">
+          <div class="bom-name">DHT22 + ESP8266 + MAX485</div>
+          <div class="bom-bar-wrap"><div class="bom-bar-track"><div class="bom-bar-fill" data-width="22"></div></div></div>
+          <div class="bom-cost">400</div>
+        </div>
+        <div class="bom-row reveal reveal-delay-4" style="border-bottom:2px solid var(--charcoal);">
+          <div class="bom-name" style="font-weight:600;color:var(--charcoal);">TOTAL</div>
+          <div class="bom-bar-wrap"></div>
+          <div class="bom-cost" style="font-weight:700;font-size:16px;">3,600 INR</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="corner-mark">CropXpert — Hardware Module</div>
+</section>
+
+
+<!-- =========================================
+     SLIDE 4: ML ENGINE
+========================================= -->
+<section class="slide" id="slide-4">
+  <div class="slide-number reveal">04 / 11</div>
+  <div class="section-label reveal reveal-delay-1">Machine Learning Engine</div>
+  <h2 class="slide-title reveal reveal-delay-1">Random Forest — <em>99.2%</em> accuracy</h2>
+  <p class="body-text reveal reveal-delay-2" style="margin-bottom:40px;">
+    Five classifiers were benchmarked under 5-fold stratified cross-validation. Random Forest was selected for its accuracy, 2.3 ms inference latency, and 4.7 MB serialized model size — ideal for web deployment.
+  </p>
+
+  <div class="grid-2 reveal reveal-delay-3">
+    <div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Model</th>
+            <th>Accuracy</th>
+            <th>F1</th>
+            <th>Inference</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="highlight">Random Forest <span class="badge">Selected</span></td>
+            <td class="highlight">99.2%</td>
+            <td>0.992</td>
+            <td>2.3 ms</td>
+          </tr>
+          <tr>
+            <td>XGBoost</td>
+            <td>98.7%</td>
+            <td>0.987</td>
+            <td>3.1 ms</td>
+          </tr>
+          <tr>
+            <td>LightGBM</td>
+            <td>98.5%</td>
+            <td>0.984</td>
+            <td>2.8 ms</td>
+          </tr>
+          <tr>
+            <td>SVM (RBF)</td>
+            <td>97.8%</td>
+            <td>0.978</td>
+            <td>8.4 ms</td>
+          </tr>
+          <tr>
+            <td>MLP (128–64–32)</td>
+            <td>97.1%</td>
+            <td>0.971</td>
+            <td>5.2 ms</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div style="margin-top:32px;">
+        <div class="section-label">Feature Importance</div>
+        <div class="score-bar-wrap">
+          <div class="score-bar-label"><span>Rainfall</span><span>28.4%</span></div>
+          <div class="score-bar"><div class="score-bar-fill" data-width="28.4"></div></div>
+        </div>
+        <div class="score-bar-wrap">
+          <div class="score-bar-label"><span>Humidity</span><span>21.7%</span></div>
+          <div class="score-bar"><div class="score-bar-fill amber" data-width="21.7"></div></div>
+        </div>
+        <div class="score-bar-wrap">
+          <div class="score-bar-label"><span>Soil pH</span><span>16.3%</span></div>
+          <div class="score-bar"><div class="score-bar-fill earth" data-width="16.3"></div></div>
+        </div>
+        <div class="score-bar-wrap">
+          <div class="score-bar-label"><span>Temperature</span><span>14.2%</span></div>
+          <div class="score-bar"><div class="score-bar-fill" data-width="14.2"></div></div>
+        </div>
+        <div class="score-bar-wrap">
+          <div class="score-bar-label"><span>Nitrogen (N)</span><span>8.8%</span></div>
+          <div class="score-bar"><div class="score-bar-fill amber" data-width="8.8"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card" style="margin-bottom:20px;">
+        <div class="card-label">Dataset</div>
+        <h4>2,200 labelled samples</h4>
+        <p>Indian Crop Recommendation Dataset covering 22 crops: Rice, Maize, Chickpea, Kidney Beans, Pigeon Pea, Mung Beans, Lentil, Pomegranate, Banana, Mango, Grapes, Watermelon, Cotton, Jute, Coffee, and more. 7 agro-climatic features per sample.</p>
+      </div>
+      <div class="card amber" style="margin-bottom:20px;">
+        <div class="card-label">Sample Output</div>
+        <h4>N=90, P=42, K=43, pH=6.5</h4>
+        <p>Top prediction: <strong>Rice 97.3%</strong> &mdash; Jute 1.8% &mdash; Coconut 0.6%</p>
+        <p style="margin-top:8px;">AGMARKNET layer appends: Rice MSP 2,183/quintal. Pune mandi: 2,210/quintal (+1.2% above MSP). Recommended.</p>
+      </div>
+      <div class="card earth">
+        <div class="card-label">Pipeline</div>
+        <h4>Preprocessing</h4>
+        <p>Per-class median imputation &rarr; Z-score outlier filtering (|z|&gt;3) &rarr; StandardScaler normalization &rarr; 70/15/15 stratified split &rarr; GridSearchCV tuning &rarr; Joblib serialization (4.7 MB)</p>
+      </div>
+    </div>
+  </div>
+  <div class="corner-mark">CropXpert — ML Engine</div>
+</section>
+
+
+<!-- =========================================
+     SLIDE 5: MARKET INTELLIGENCE
+========================================= -->
+<section class="slide" id="slide-5">
+  <div class="slide-number reveal">05 / 11</div>
+  <div class="section-label reveal reveal-delay-1">Novel Contribution I</div>
+  <h2 class="slide-title reveal reveal-delay-1">Market-Aware <em>Recommendation Engine</em></h2>
+  <p class="body-text reveal reveal-delay-2" style="margin-bottom:40px;">
+    Every reviewed prior system recommends crops on agro-climatic suitability alone — ignoring whether the crop will actually sell. CropXpert is the <strong>first Indian precision agriculture system</strong> to integrate live Minimum Support Price data from AGMARKNET into the ranking formula.
+  </p>
+
+  <div class="grid-2 reveal reveal-delay-3">
+    <div>
+      <div class="formula-box">
+        <div><span class="var">Score</span>(c) = <span class="coeff">0.60</span> &times; P<sub>ML</sub>(c)</div>
+        <div style="padding-left:72px;">+ <span class="coeff">0.25</span> &times; MSP_Index(c)</div>
+        <div style="padding-left:72px;">+ <span class="coeff">0.15</span> &times; SeasonDemand(c)</div>
+        <div style="margin-top:12px;" class="comment">// &alpha; + &beta; + &gamma; = 1.0 (configurable)</div>
+      </div>
+
+      <div style="margin-top:32px;">
+        <div class="feature-row">
+          <div class="feature-num">&alpha; 0.60</div>
+          <div class="feature-content">
+            <h4>ML Probability Score</h4>
+            <p>Random Forest confidence for the crop given the sensor readings. Dominant weight — agronomic fit is primary.</p>
+          </div>
+        </div>
+        <div class="feature-row">
+          <div class="feature-num">&beta; 0.25</div>
+          <div class="feature-content">
+            <h4>MSP Market Index</h4>
+            <p>Live Minimum Support Price &amp; mandi arrival data fetched from AGMARKNET government API. 24-hour SQLite cache.</p>
+          </div>
+        </div>
+        <div class="feature-row">
+          <div class="feature-num">&gamma; 0.15</div>
+          <div class="feature-content">
+            <h4>Seasonal Demand</h4>
+            <p>Month-adjusted mandi arrival volume proxy — down-ranks crops with surplus supply at time of sowing.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="big-quote reveal reveal-delay-4" style="margin-bottom:32px;">
+        A crop with high ML confidence but suppressed market price is ranked below a slightly less optimal but economically viable alternative.
+      </div>
+      <div class="card teal">
+        <div class="card-label">Data Sources</div>
+        <h4>Live Government APIs</h4>
+        <p>AGMARKNET (agmarknet.gov.in) — official mandi price portal from the Directorate of Marketing &amp; Inspection, Government of India. OpenWeatherMap One Call 3.0 for rainfall. MyScheme.gov.in for welfare schemes.</p>
+      </div>
+      <div style="margin-top:20px;padding:20px 24px;background:rgba(122,158,126,0.08);border:1px solid var(--line);">
+        <div class="section-label" style="margin-bottom:8px;">Key insight</div>
+        <p class="body-text" style="font-size:14px;">The Market Intelligence Layer runs asynchronously — MSP data is cached for 24 hours, adding zero latency to the 2.3 ms ML inference path. Final recommendation is produced in under 5 ms end-to-end.</p>
+      </div>
+    </div>
+  </div>
+  <div class="corner-mark">CropXpert — Market Intelligence</div>
+</section>
+
+
+<!-- =========================================
+     SLIDE 6: ARCHITECTURE
+========================================= -->
+<section class="slide" id="slide-6">
+  <div class="slide-number reveal">06 / 11</div>
+  <div class="section-label reveal reveal-delay-1">System Architecture</div>
+  <h2 class="slide-title reveal reveal-delay-1">Seven-Layer <em>Microservices</em> Platform</h2>
+  <p class="body-text reveal reveal-delay-2" style="margin-bottom:40px;">
+    Microservices over an MQTT event bus — selected over monolithic and serverless patterns for independent deployability, heterogeneous hardware integration, and offline resilience.
+  </p>
+
+  <div class="grid-2 reveal reveal-delay-3">
+    <div>
+      <div id="arch-canvas-wrap" class="threejs-panel" style="height:360px;">
+        <canvas id="arch-canvas" style="width:100%;height:360px;display:block;"></canvas>
+      </div>
+    </div>
+    <div>
+      <div style="display:flex;flex-direction:column;gap:0;">
+        <div style="display:flex;align-items:center;gap:16px;padding:14px 0;border-bottom:1px solid var(--line);">
+          <div style="width:14px;height:14px;background:#4A7A50;border-radius:2px;flex-shrink:0;"></div>
+          <div><span style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--sage-dark);">Layer 1</span> — Physical Sensing &mdash; RS485 NPK, pH, Moisture, DHT22</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:16px;padding:14px 0;border-bottom:1px solid var(--line);">
+          <div style="width:14px;height:14px;background:#3D7A72;border-radius:2px;flex-shrink:0;"></div>
+          <div><span style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--teal);">Layer 2</span> — Edge / Communication &mdash; Arduino UNO, ESP32, Mosquitto MQTT</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:16px;padding:14px 0;border-bottom:1px solid var(--line);">
+          <div style="width:14px;height:14px;background:#8B6F47;border-radius:2px;flex-shrink:0;"></div>
+          <div><span style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--earth);">Layer 3</span> — ML Inference &mdash; FastAPI &plus; Random Forest (2.3 ms, 4.7 MB)</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:16px;padding:14px 0;border-bottom:1px solid var(--line);">
+          <div style="width:14px;height:14px;background:#D4A853;border-radius:2px;flex-shrink:0;"></div>
+          <div><span style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--amber);">Layer 4</span> — Market Intelligence &mdash; AGMARKNET MSP Scorer</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:16px;padding:14px 0;border-bottom:1px solid var(--line);">
+          <div style="width:14px;height:14px;background:#7A9E7E;border-radius:2px;flex-shrink:0;"></div>
+          <div><span style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--sage);">Layer 5</span> — Presentation &mdash; React 18 PWA, react-i18next, 4 languages</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:16px;padding:14px 0;border-bottom:1px solid var(--line);">
+          <div style="width:14px;height:14px;background:#B85C38;border-radius:2px;flex-shrink:0;"></div>
+          <div><span style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--rust);">Layer 6</span> — Bot Gateway &mdash; Twilio WhatsApp &plus; MSG91 SMS fallback</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:16px;padding:14px 0;">
+          <div style="width:14px;height:14px;background:#1C2B1E;border-radius:2px;flex-shrink:0;"></div>
+          <div><span style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--charcoal);">Layer 7</span> — External APIs &mdash; AGMARKNET, OpenWeatherMap, MyScheme.gov.in</div>
+        </div>
+      </div>
+      <div style="margin-top:20px;display:flex;gap:12px;flex-wrap:wrap;">
+        <div class="tag">FastAPI</div>
+        <div class="tag">React 18 PWA</div>
+        <div class="tag">SQLite / PostgreSQL</div>
+        <div class="tag">Mosquitto MQTT</div>
+        <div class="tag">Railway.app / AWS EC2</div>
+        <div class="tag">ESP32 OTA</div>
+      </div>
+    </div>
+  </div>
+  <div class="corner-mark">CropXpert — Architecture</div>
+</section>
+
+
+<!-- =========================================
+     SLIDE 7: FARMER PORTAL
+========================================= -->
+<section class="slide" id="slide-7">
+  <div class="slide-number reveal">07 / 11</div>
+  <div class="section-label reveal reveal-delay-1">Novel Contribution II</div>
+  <h2 class="slide-title reveal reveal-delay-1">Vernacular-First <em>Farmer Support Portal</em></h2>
+  <p class="body-text reveal reveal-delay-2" style="margin-bottom:40px;">
+    Beyond crop recommendations — a welfare platform that ensures every eligible farmer claims their PM-KISAN entitlement, crop insurance, and zero-interest KCC loan. In their own language.
+  </p>
+
+  <div class="grid-2 reveal reveal-delay-3">
+    <div>
+      <div style="margin-bottom:28px;">
+        <div class="section-label">Language Coverage</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div style="padding:16px;border:1px solid var(--line);background:white;">
+            <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--sage-dark);margin-bottom:6px;">Hindi</div>
+            <div style="font-size:22px;font-family:'DM Serif Display',serif;color:var(--charcoal);">&#2361;&#2367;&#2306;&#2342;&#2368;</div>
+            <div style="font-size:11px;color:#5A6C5C;margin-top:4px;">UP, MP, Bihar, Rajasthan</div>
+          </div>
+          <div style="padding:16px;border:1px solid var(--line);background:white;">
+            <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--sage-dark);margin-bottom:6px;">Marathi</div>
+            <div style="font-size:22px;font-family:'DM Serif Display',serif;color:var(--charcoal);">&#2350;&#2352;&#2366;&#2336;&#2368;</div>
+            <div style="font-size:11px;color:#5A6C5C;margin-top:4px;">Maharashtra</div>
+          </div>
+          <div style="padding:16px;border:1px solid var(--line);background:white;">
+            <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--sage-dark);margin-bottom:6px;">Tamil</div>
+            <div style="font-size:22px;font-family:'DM Serif Display',serif;color:var(--charcoal);">&#2980;&#2990;&#3007;&#2996;&#3021;</div>
+            <div style="font-size:11px;color:#5A6C5C;margin-top:4px;">Tamil Nadu</div>
+          </div>
+          <div style="padding:16px;border:1px solid var(--line);background:white;">
+            <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--sage-dark);margin-bottom:6px;">Telugu</div>
+            <div style="font-size:22px;font-family:'DM Serif Display',serif;color:var(--charcoal);">&#3108;&#3142;&#3122;&#3137;&#3095;&#3137;</div>
+            <div style="font-size:11px;color:#5A6C5C;margin-top:4px;">Andhra Pradesh, Telangana</div>
+          </div>
+        </div>
+        <p style="font-size:12px;color:#5A6C5C;margin-top:10px;font-style:italic;font-weight:300;">Covering over 400 million farmers. Auto-detected from browser locale.</p>
+      </div>
+    </div>
+    <div>
+      <div class="scheme-grid">
+        <div class="scheme-card">
+          <div class="tag">Govt. Scheme</div>
+          <h5>PM-KISAN Samman Nidhi</h5>
+          <p>Rs. 6,000/year direct income support. Eligibility check, documents list, and apply link — in regional language.</p>
+        </div>
+        <div class="scheme-card">
+          <div class="tag">Insurance</div>
+          <h5>PM Fasal Bima Yojana 2.0</h5>
+          <p>Crop insurance for natural calamities. Premium rates, coverage details, claim process — localized per state.</p>
+        </div>
+        <div class="scheme-card">
+          <div class="tag">Zero-Interest Loan</div>
+          <h5>Kisan Credit Card (KCC)</h5>
+          <p>Up to Rs. 3 lakh at 0% effective interest. Eligibility criteria, bank contacts, and application walkthrough.</p>
+        </div>
+        <div class="scheme-card">
+          <div class="tag">Infrastructure</div>
+          <h5>NABARD &amp; PMKSY</h5>
+          <p>Subsidized drip irrigation, farm infrastructure. PM Krishi Sinchayee Yojana eligibility and state portal links.</p>
+        </div>
+      </div>
+      <div style="margin-top:16px;padding:16px 20px;background:rgba(122,158,126,0.08);border-left:3px solid var(--sage);">
+        <p style="font-size:13px;color:var(--charcoal-mid);font-weight:300;">Portal synced monthly via MyScheme.gov.in API. Soil Health Dashboard tracks NPK/pH trends with RAG (Red/Amber/Green) status per ICAR optimal ranges. Farm Profit Calculator cross-references ICAR input cost tables with AGMARKNET mandi prices.</p>
+      </div>
+    </div>
+  </div>
+  <div class="corner-mark">CropXpert — Farmer Portal</div>
+</section>
+
+
+<!-- =========================================
+     SLIDE 8: CROPBOT
+========================================= -->
+<section class="slide" id="slide-8">
+  <div class="slide-number reveal">08 / 11</div>
+  <div class="section-label reveal reveal-delay-1">Novel Contribution III</div>
+  <h2 class="slide-title reveal reveal-delay-1">CropBot — No Smartphone, <em>No Problem</em></h2>
+  <p class="body-text reveal reveal-delay-2" style="margin-bottom:40px;">
+    The WhatsApp/SMS CropBot eliminates the smartphone and internet dependency — reaching farmers who own nothing more than a basic keypad phone. A first in Indian precision agriculture.
+  </p>
+
+  <div class="grid-2 reveal reveal-delay-3">
+    <div>
+      <div class="card" style="margin-bottom:20px;">
+        <div class="card-label">WhatsApp Channel — Twilio API</div>
+        <h4>Natural Language Queries</h4>
+        <p>Farmer sends soil values in conversational language (in Hindi, Marathi, or any supported language). Bot parses natural language, routes through the full ML + Market Intelligence pipeline, and returns top-3 crops with mandi prices and a sowing tip — as a rich WhatsApp card.</p>
+      </div>
+
+      <div class="card earth">
+        <div class="card-label">SMS Fallback — MSG91</div>
+        <h4>160-Character Precision</h4>
+        <p>Farmer texts a shortcode from any basic phone — no internet, no app, no smartphone required.</p>
+        <div style="margin-top:16px;background:var(--charcoal);padding:12px 16px;font-family:'DM Mono',monospace;font-size:12px;color:var(--cream);letter-spacing:0.03em;border-radius:2px;">
+          CROP N90 P42 K43 PH6.5 DIST PUNE
+        </div>
+        <div style="margin-top:8px;background:rgba(122,158,126,0.15);padding:12px 16px;font-family:'DM Mono',monospace;font-size:11px;color:var(--charcoal);border-radius:2px;">
+          Reply: RICE 97% MSP 2183/q MANDI 2210. Sow Oct–Nov. Good profit.
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="big-quote reveal reveal-delay-4" style="margin-bottom:32px;font-size:24px;">
+        Even a farmer with a basic INR 500 keypad phone can receive an AI crop recommendation.
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div class="stat-block">
+          <div class="stat-number">0</div>
+          <div class="stat-unit">Internet needed</div>
+          <div class="stat-desc">SMS path works on 2G/EDGE networks found even in remote areas</div>
+        </div>
+        <div class="stat-block">
+          <div class="stat-number">160</div>
+          <div class="stat-unit">Char SMS reply</div>
+          <div class="stat-desc">Top crop, MSP price, mandi rate, and sowing tip — fits in one SMS</div>
+        </div>
+        <div class="stat-block">
+          <div class="stat-number">4</div>
+          <div class="stat-unit">Languages</div>
+          <div class="stat-desc">Bot auto-detects language from input and replies in kind</div>
+        </div>
+        <div class="stat-block">
+          <div class="stat-number">2.3<span style="font-size:24px;">ms</span></div>
+          <div class="stat-unit">ML Inference</div>
+          <div class="stat-desc">Same pipeline serves web, WhatsApp, and SMS through unified FastAPI router</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="corner-mark">CropXpert — CropBot</div>
+</section>
+
+
+<!-- =========================================
+     SLIDE 9: COMPARISON
+========================================= -->
+<section class="slide" id="slide-9">
+  <div class="slide-number reveal">09 / 11</div>
+  <div class="section-label reveal reveal-delay-1">Research Gap Analysis</div>
+  <h2 class="slide-title reveal reveal-delay-1">CropXpert vs. Prior <em>Literature</em></h2>
+  <p class="body-text reveal reveal-delay-2" style="margin-bottom:40px;">
+    A systematic review of existing precision agriculture systems reveals that no prior work addresses all six dimensions simultaneously. CropXpert is the only integrated solution.
+  </p>
+
+  <div class="reveal reveal-delay-3">
+    <div class="col-header">
+      <div class="col-header-cell">Capability</div>
+      <div class="col-header-cell">Pudumalar 2017</div>
+      <div class="col-header-cell">Doshi 2018</div>
+      <div class="col-header-cell">Gondchawar 2016</div>
+      <div class="col-header-cell highlight">CropXpert 2025</div>
+    </div>
+    <div class="comp-row">
+      <div class="comp-cell">Real-time IoT Sensing</div>
+      <div class="comp-cell"><span class="no">Static lab data</span></div>
+      <div class="comp-cell"><span class="no">Static dataset</span></div>
+      <div class="comp-cell"><span class="yes">GSM/GPS sensors</span></div>
+      <div class="comp-cell"><span class="yes">NPK + pH + moisture + DHT22</span></div>
+    </div>
+    <div class="comp-row">
+      <div class="comp-cell">ML Crop Advisory</div>
+      <div class="comp-cell"><span class="yes">RF / DT / NB &mdash; 90%</span></div>
+      <div class="comp-cell"><span class="yes">RF &mdash; 99.3%</span></div>
+      <div class="comp-cell"><span class="no">None</span></div>
+      <div class="comp-cell"><span class="yes">RF &mdash; 99.2% &mdash; 2.3 ms</span></div>
+    </div>
+    <div class="comp-row">
+      <div class="comp-cell">Live Market Prices</div>
+      <div class="comp-cell"><span class="no">None</span></div>
+      <div class="comp-cell"><span class="no">None</span></div>
+      <div class="comp-cell"><span class="no">None</span></div>
+      <div class="comp-cell"><span class="yes">AGMARKNET MSP + mandi</span></div>
+    </div>
+    <div class="comp-row">
+      <div class="comp-cell">Multilingual UI</div>
+      <div class="comp-cell"><span class="no">English only</span></div>
+      <div class="comp-cell"><span class="no">English only</span></div>
+      <div class="comp-cell"><span class="no">English only</span></div>
+      <div class="comp-cell"><span class="yes">Hindi, Marathi, Tamil, Telugu</span></div>
+    </div>
+    <div class="comp-row">
+      <div class="comp-cell">Govt. Scheme Advisory</div>
+      <div class="comp-cell"><span class="no">None</span></div>
+      <div class="comp-cell"><span class="no">None</span></div>
+      <div class="comp-cell"><span class="no">None</span></div>
+      <div class="comp-cell"><span class="yes">PM-KISAN, KCC, PMFBY, NABARD</span></div>
+    </div>
+    <div class="comp-row">
+      <div class="comp-cell">Offline / SMS Access</div>
+      <div class="comp-cell"><span class="no">Internet required</span></div>
+      <div class="comp-cell"><span class="no">Internet required</span></div>
+      <div class="comp-cell"><span class="no">GSM required</span></div>
+      <div class="comp-cell"><span class="yes">SMS shortcode &mdash; basic phone</span></div>
+    </div>
+    <div class="comp-row" style="border-bottom:none;">
+      <div class="comp-cell">Hardware Cost</div>
+      <div class="comp-cell"><span class="no">Lab costs INR 500–2,000/param</span></div>
+      <div class="comp-cell"><span class="no">Software only</span></div>
+      <div class="comp-cell"><span class="no">Undisclosed</span></div>
+      <div class="comp-cell"><span class="yes">INR 3,600 — permanently reusable</span></div>
+    </div>
+  </div>
+  <div class="corner-mark">CropXpert — Comparison</div>
+</section>
+
+
+<!-- =========================================
+     SLIDE 10: ROADMAP
+========================================= -->
+<section class="slide" id="slide-10">
+  <div class="slide-number reveal">10 / 11</div>
+  <div class="section-label reveal reveal-delay-1">Roadmap</div>
+  <h2 class="slide-title reveal reveal-delay-1">From Prototype to <em>Pan-India Scale</em></h2>
+  <p class="body-text reveal reveal-delay-2" style="margin-bottom:48px;">
+    A phased roadmap extending the platform from its current prototype into a nationwide offline-capable precision agriculture network — aligned with India's Digital Agriculture Mission.
+  </p>
+
+  <div class="grid-2 reveal reveal-delay-3">
+    <div class="timeline">
+      <div class="timeline-item done">
+        <div class="timeline-label">Current — v1.0 — Done</div>
+        <div class="timeline-title">Core Platform</div>
+        <div class="timeline-desc">Arduino UNO + RS485 NPK + pH + moisture + DHT22. Random Forest (99.2%, 2.3 ms). React PWA with 4 languages. WhatsApp/SMS CropBot. Government Scheme Portal. Hardware BOM INR 3,600.</div>
+      </div>
+      <div class="timeline-item done">
+        <div class="timeline-label">v1.1 — In Progress</div>
+        <div class="timeline-title">Market Intelligence Layer</div>
+        <div class="timeline-desc">Full AGMARKNET MSP integration with 24-hr cache. Weighted scoring formula live. Soil Health Dashboard RAG indicators. Farm Profit Calculator per-crop.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-label">v2.0 — Roadmap</div>
+        <div class="timeline-title">LoRa Offline Extension</div>
+        <div class="timeline-desc">Replace ESP8266 Wi-Fi with ESP32 + LoRa SX1276 (915 MHz). 5–15 km range at &lt;20 mA. RAK2245 LoRaWAN gateway supporting 1,000 sensor nodes. PM-WANI backhaul integration. Targets Chhattisgarh, Jharkhand, NE India.</div>
+      </div>
+    </div>
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-label">v2.1 — Future Research</div>
+        <div class="timeline-title">Satellite NDVI Fusion</div>
+        <div class="timeline-desc">Cross-reference ground NPK sensor readings with Sentinel-2 satellite NDVI values (4.2% accuracy gain demonstrated by Sharma et al., 2021). Field validation in Punjab and Maharashtra.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-label">v2.2 — Future Research</div>
+        <div class="timeline-title">Crop Disease Detection</div>
+        <div class="timeline-desc">TFLite leaf-image classifier deployed on ESP32-CAM. On-device inference for crop disease detection without cloud dependency. Expands the advisory from soil to visible plant health.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-label">v3.0 — Scale</div>
+        <div class="timeline-title">KVK Field Deployment</div>
+        <div class="timeline-desc">Deploy SMS bot in collaboration with Krishi Vigyan Kendra (KVK) extension centres. Expand crop database from 22 to 50+ varieties. Add state-level agro-climatic calibration for all 28 Indian states.</div>
+      </div>
+    </div>
+  </div>
+  <div class="corner-mark">CropXpert — Roadmap</div>
+</section>
+
+
+<!-- =========================================
+     SLIDE 11: VISION / CLOSE
+========================================= -->
+<section class="slide" id="slide-11">
+  <div style="position:relative;z-index:2;max-width:900px;">
+    <div class="section-label reveal">Vision Statement</div>
+    <div class="hr reveal reveal-delay-1"></div>
+    <div class="big-quote reveal reveal-delay-2" style="color:var(--cream);border-left-color:var(--sage-light);margin-bottom:48px;font-size:clamp(20px,2.8vw,32px);">
+      To empower every Indian smallholder farmer — regardless of language, literacy, or internet access — with real-time soil intelligence, AI-driven crop advisory, live market insight, and seamless access to every government welfare entitlement they deserve.
+    </div>
+
+    <div class="grid-3 reveal reveal-delay-3" style="margin-bottom:48px;">
+      <div style="border-top:2px solid rgba(168,197,160,0.4);padding-top:20px;">
+        <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--sage-light);margin-bottom:8px;">Knows the Soil</div>
+        <div style="font-size:14px;color:rgba(248,244,238,0.7);font-weight:300;line-height:1.6;">Real-time NPK, pH, moisture, temperature — from the field, not the laboratory. At INR 3,600.</div>
+      </div>
+      <div style="border-top:2px solid rgba(168,197,160,0.4);padding-top:20px;">
+        <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--amber-light);margin-bottom:8px;">Watches the Market</div>
+        <div style="font-size:14px;color:rgba(248,244,238,0.7);font-weight:300;line-height:1.6;">Live AGMARKNET MSP &amp; mandi prices co-optimised with ML predictions. First in Indian literature.</div>
+      </div>
+      <div style="border-top:2px solid rgba(168,197,160,0.4);padding-top:20px;">
+        <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--sage-light);margin-bottom:8px;">Speaks the Language</div>
+        <div style="font-size:14px;color:rgba(248,244,238,0.7);font-weight:300;line-height:1.6;">Hindi, Marathi, Tamil, Telugu. SMS on basic phones. 400 million farmers within reach.</div>
+      </div>
+    </div>
+
+    <div class="reveal reveal-delay-4" style="border-top:1px solid rgba(248,244,238,0.12);padding-top:32px;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:24px;">
+      <div>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.25em;text-transform:uppercase;color:rgba(248,244,238,0.4);margin-bottom:8px;">Team</div>
+        <div style="font-size:15px;color:rgba(248,244,238,0.9);">Adnan Nagdiwala — RA2311026010119</div>
+        <div style="font-size:15px;color:rgba(248,244,238,0.9);">Chandra Bhayal — RA2311026010072</div>
+      </div>
+      <div>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.25em;text-transform:uppercase;color:rgba(248,244,238,0.4);margin-bottom:8px;">Guide</div>
+        <div style="font-size:15px;color:rgba(248,244,238,0.9);">Dr. R. Siva</div>
+        <div style="font-size:12px;color:rgba(248,244,238,0.5);font-weight:300;">Dept. of CINTEL, SRMIST Kattankulathur</div>
+      </div>
+      <div>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.25em;text-transform:uppercase;color:rgba(248,244,238,0.4);margin-bottom:8px;">Academic Year</div>
+        <div style="font-size:15px;color:rgba(248,244,238,0.9);">2024–25 — Minor Project</div>
+        <div style="font-size:12px;color:rgba(248,244,238,0.5);font-weight:300;">IoT &middot; Machine Learning &middot; Web Development</div>
+      </div>
+    </div>
+  </div>
+  <div class="corner-mark">CropXpert — CINTEL — SRMIST</div>
+</section>
+
+
+<script>
+// ============================================
+// PROGRESS BAR & NAV DOTS
+// ============================================
+const slides = document.querySelectorAll('.slide');
+const dots = document.querySelectorAll('.nav-dot');
+const progressBar = document.getElementById('progress-bar');
+
+function updateNav() {
+  const scrollTop = window.scrollY;
+  const docHeight = document.body.scrollHeight - window.innerHeight;
+  const progress = (scrollTop / docHeight) * 100;
+  progressBar.style.width = progress + '%';
+
+  let current = 0;
+  slides.forEach((slide, i) => {
+    const rect = slide.getBoundingClientRect();
+    if (rect.top <= window.innerHeight / 2) current = i;
+  });
+  dots.forEach((d, i) => d.classList.toggle('active', i === current));
+}
+window.addEventListener('scroll', updateNav, { passive: true });
+dots.forEach((dot, i) => {
+  dot.addEventListener('click', () => slides[i].scrollIntoView({ behavior: 'smooth' }));
+});
+
+// ============================================
+// REVEAL ON SCROLL
+// ============================================
+const revealEls = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      // trigger score bars
+      e.target.querySelectorAll('.score-bar-fill').forEach(bar => {
+        bar.style.width = bar.dataset.width + '%';
+      });
+      e.target.querySelectorAll('.bom-bar-fill').forEach(bar => {
+        bar.style.width = bar.dataset.width + '%';
+      });
+    }
+  });
+}, { threshold: 0.15 });
+revealEls.forEach(el => observer.observe(el));
+
+// Also trigger score bars/bom bars from parent reveals
+document.querySelectorAll('.score-bar-fill, .bom-bar-fill').forEach(bar => {
+  const parentReveal = bar.closest('.reveal');
+  if (!parentReveal) {
+    // Not inside a reveal, just trigger on scroll
+    const barObserver = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.style.width = e.target.dataset.width + '%';
+          barObserver.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    barObserver.observe(bar);
+  }
+});
+
+// ============================================
+// THREE.JS — HERO BACKGROUND (particle field)
+// ============================================
+(function() {
+  const canvas = document.getElementById('hero-bg-canvas');
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(60, 1, 0.1, 100);
+  camera.position.z = 5;
+
+  // Particle grid
+  const count = 3000;
+  const positions = new Float32Array(count * 3);
+  for (let i = 0; i < count; i++) {
+    positions[i * 3]     = (Math.random() - 0.5) * 20;
+    positions[i * 3 + 1] = (Math.random() - 0.5) * 20;
+    positions[i * 3 + 2] = (Math.random() - 0.5) * 10;
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  const mat = new THREE.PointsMaterial({ color: 0x7A9E7E, size: 0.04, transparent: true, opacity: 0.7 });
+  const points = new THREE.Points(geo, mat);
+  scene.add(points);
+
+  // Connecting lines - create a few line segments
+  const lineGeo = new THREE.BufferGeometry();
+  const linePositions = [];
+  for (let i = 0; i < 200; i++) {
+    const ax = (Math.random() - 0.5) * 20;
+    const ay = (Math.random() - 0.5) * 20;
+    const az = (Math.random() - 0.5) * 10;
+    linePositions.push(ax, ay, az);
+    linePositions.push(ax + (Math.random()-0.5)*2, ay + (Math.random()-0.5)*2, az);
+  }
+  lineGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(linePositions), 3));
+  const lineMat = new THREE.LineBasicMaterial({ color: 0x4A7A50, transparent: true, opacity: 0.3 });
+  const lineSegs = new THREE.LineSegments(lineGeo, lineMat);
+  scene.add(lineSegs);
+
+  function resize() {
+    const w = canvas.parentElement.clientWidth;
+    const h = canvas.parentElement.clientHeight;
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  let t = 0;
+  function animate() {
+    requestAnimationFrame(animate);
+    t += 0.003;
+    points.rotation.y = t * 0.2;
+    points.rotation.x = t * 0.05;
+    lineSegs.rotation.y = t * 0.15;
+    renderer.render(scene, camera);
+  }
+  animate();
+})();
+
+
+// ============================================
+// THREE.JS — HARDWARE VISUALIZATION
+// ============================================
+(function() {
+  const canvas = document.getElementById('hardware-canvas');
+  if (!canvas) return;
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setClearColor(0x1C2B1E, 1);
+  renderer.shadowMap.enabled = true;
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
+  camera.position.set(6, 5, 8);
+  camera.lookAt(0, 0, 0);
+
+  // Lighting
+  const ambient = new THREE.AmbientLight(0xA8C5A0, 0.5);
+  scene.add(ambient);
+  const directional = new THREE.DirectionalLight(0xffffff, 1.2);
+  directional.position.set(5, 8, 5);
+  directional.castShadow = true;
+  scene.add(directional);
+  const pointLight = new THREE.PointLight(0xD4A853, 1.5, 15);
+  pointLight.position.set(-3, 4, 3);
+  scene.add(pointLight);
+
+  // Materials
+  const matGreen = new THREE.MeshStandardMaterial({ color: 0x2D5A33, roughness: 0.6, metalness: 0.1 });
+  const matPCB = new THREE.MeshStandardMaterial({ color: 0x1A4025, roughness: 0.8 });
+  const matGold = new THREE.MeshStandardMaterial({ color: 0xC8A53A, roughness: 0.3, metalness: 0.8 });
+  const matGrey = new THREE.MeshStandardMaterial({ color: 0x8A9A8A, roughness: 0.7, metalness: 0.3 });
+  const matBlue = new THREE.MeshStandardMaterial({ color: 0x3A5A8A, roughness: 0.5, metalness: 0.2 });
+  const matRed = new THREE.MeshStandardMaterial({ color: 0xB84444, roughness: 0.6 });
+  const matWireRed = new THREE.MeshStandardMaterial({ color: 0xFF4444, roughness: 0.8 });
+  const matWireBlue = new THREE.MeshStandardMaterial({ color: 0x4488FF, roughness: 0.8 });
+  const matWireYellow = new THREE.MeshStandardMaterial({ color: 0xFFCC44, roughness: 0.8 });
+
+  const group = new THREE.Group();
+
+  // ARDUINO UNO BASE BOARD
+  const boardGeo = new THREE.BoxGeometry(4, 0.15, 2.8);
+  const board = new THREE.Mesh(boardGeo, matPCB);
+  board.position.set(0, 0, 0);
+  board.castShadow = true;
+  group.add(board);
+
+  // Arduino header pins (golden)
+  for (let i = 0; i < 14; i++) {
+    const pin = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.25, 6), matGold);
+    pin.position.set(-1.7 + i * 0.25, 0.2, -1.1);
+    group.add(pin);
+  }
+  for (let i = 0; i < 6; i++) {
+    const pin = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.25, 6), matGold);
+    pin.position.set(-0.6 + i * 0.25, 0.2, 1.1);
+    group.add(pin);
+  }
+
+  // Arduino USB chip block
+  const chip = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.2, 0.4), matGrey);
+  chip.position.set(-1.7, 0.18, 0.2);
+  group.add(chip);
+
+  // Arduino reset button
+  const btn = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 0.15, 8), matRed);
+  btn.position.set(-1.5, 0.18, -0.5);
+  group.add(btn);
+
+  // ATmega chip on board
+  const mega = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.22, 0.9), new THREE.MeshStandardMaterial({ color: 0x222222, roughness: 0.8 }));
+  mega.position.set(0.5, 0.19, 0.1);
+  group.add(mega);
+
+  // NPK SENSOR (large, to the right)
+  const npkBase = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.2, 0.7), matGreen);
+  npkBase.position.set(3.2, 0.3, -0.3);
+  npkBase.castShadow = true;
+  group.add(npkBase);
+
+  // NPK sensor prongs
+  for (let i = 0; i < 3; i++) {
+    const prong = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.04, 0.8, 6), matGold);
+    prong.position.set(3.0 + i * 0.2, -0.2, -0.3);
+    group.add(prong);
+  }
+  // NPK label chip
+  const npkChip = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.1, 0.4), new THREE.MeshStandardMaterial({ color: 0x111111 }));
+  npkChip.position.set(3.2, 0.41, -0.3);
+  group.add(npkChip);
+
+  // RS485 MAX485 CONVERTER (small)
+  const max485 = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.15, 0.5), matBlue);
+  max485.position.set(1.8, 0.3, -0.8);
+  group.add(max485);
+
+  // ESP8266 module
+  const esp = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.12, 0.4), new THREE.MeshStandardMaterial({ color: 0x2A4A2A, roughness: 0.7 }));
+  esp.position.set(1.8, 0.3, 0.4);
+  group.add(esp);
+  // ESP antenna
+  const antenna = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.3, 0.04), new THREE.MeshStandardMaterial({ color: 0x888888, metalness: 0.8 }));
+  antenna.position.set(2.2, 0.45, 0.4);
+  group.add(antenna);
+
+  // DHT22 sensor
+  const dht = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.45, 0.35), new THREE.MeshStandardMaterial({ color: 0xE8E0D0, roughness: 0.5 }));
+  dht.position.set(-0.5, 0.35, 1.5);
+  group.add(dht);
+  // DHT pins
+  for (let i = 0; i < 3; i++) {
+    const p = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.35, 6), matGold);
+    p.position.set(-0.5 + (i-1)*0.12, 0, 1.5);
+    group.add(p);
+  }
+
+  // pH sensor (cylindrical)
+  const phBody = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.1, 0.9, 10), matGrey);
+  phBody.position.set(0.8, 0.55, 1.6);
+  group.add(phBody);
+  const phTip = new THREE.Mesh(new THREE.SphereGeometry(0.1, 8, 8), new THREE.MeshStandardMaterial({ color: 0xAAAA44, roughness: 0.4 }));
+  phTip.position.set(0.8, 0.05, 1.6);
+  group.add(phTip);
+
+  // Moisture sensor
+  const moistBase = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.15, 0.6), matGreen);
+  moistBase.position.set(-0.8, 0.3, 1.5);
+  group.add(moistBase);
+  for (let i = 0; i < 2; i++) {
+    const prong = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.6, 0.06), matGold);
+    prong.position.set(-0.88 + i * 0.16, -0.15, 1.5);
+    group.add(prong);
+  }
+
+  // CONNECTING WIRES (tubes)
+  function addWire(from, to, mat, segs) {
+    const points = [];
+    for (let i = 0; i <= segs; i++) {
+      const t = i / segs;
+      const mid = new THREE.Vector3().lerpVectors(from, to, t);
+      mid.y += Math.sin(t * Math.PI) * 0.3;
+      points.push(mid);
+    }
+    const curve = new THREE.CatmullRomCurve3(points);
+    const tubeGeo = new THREE.TubeGeometry(curve, 12, 0.025, 5, false);
+    group.add(new THREE.Mesh(tubeGeo, mat));
+  }
+
+  addWire(new THREE.Vector3(0.5, 0.2, 1.1), new THREE.Vector3(-0.5, 0.45, 1.3), matWireRed, 8);
+  addWire(new THREE.Vector3(0.75, 0.2, 1.1), new THREE.Vector3(0.8, 0.1, 1.3), matWireBlue, 8);
+  addWire(new THREE.Vector3(2.0, 0.2, -1.1), new THREE.Vector3(1.8, 0.3, -0.8), matWireYellow, 8);
+  addWire(new THREE.Vector3(2.5, 0.2, -1.1), new THREE.Vector3(3.2, 0.3, -0.6), matWireRed, 10);
+  addWire(new THREE.Vector3(1.2, 0.2, 1.1), new THREE.Vector3(1.8, 0.3, 0.4), matWireBlue, 8);
+
+  // Ground plane
+  const groundGeo = new THREE.PlaneGeometry(12, 12);
+  const groundMat = new THREE.MeshStandardMaterial({ color: 0x111811, roughness: 1 });
+  const ground = new THREE.Mesh(groundGeo, groundMat);
+  ground.rotation.x = -Math.PI / 2;
+  ground.position.y = -0.45;
+  ground.receiveShadow = true;
+  scene.add(ground);
+
+  scene.add(group);
+
+  // Grid lines
+  const gridHelper = new THREE.GridHelper(10, 20, 0x2D4A2D, 0x1A3A1A);
+  gridHelper.position.y = -0.44;
+  scene.add(gridHelper);
+
+  function resize() {
+    const w = canvas.parentElement.clientWidth;
+    const h = 420;
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  let t = 0;
+  function animate() {
+    requestAnimationFrame(animate);
+    t += 0.008;
+    group.rotation.y = Math.sin(t * 0.3) * 0.4 + 0.2;
+    group.position.y = Math.sin(t * 0.5) * 0.08;
+    renderer.render(scene, camera);
+  }
+  animate();
+})();
+
+
+// ============================================
+// THREE.JS — ARCHITECTURE LAYER VISUALIZATION
+// ============================================
+(function() {
+  const canvas = document.getElementById('arch-canvas');
+  if (!canvas) return;
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setClearColor(0xF8F4EE, 1);
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 100);
+  camera.position.set(0, 3, 10);
+  camera.lookAt(0, 0, 0);
+
+  const ambient = new THREE.AmbientLight(0xffffff, 0.8);
+  scene.add(ambient);
+  const dir = new THREE.DirectionalLight(0xffffff, 0.8);
+  dir.position.set(5, 5, 5);
+  scene.add(dir);
+
+  const layers = [
+    { color: 0x4A7A50, y: 3.0,   label: 'Physical Sensing' },
+    { color: 0x3D7A72, y: 2.0,   label: 'Edge / MQTT' },
+    { color: 0x8B6F47, y: 1.0,   label: 'ML Inference' },
+    { color: 0xD4A853, y: 0.0,   label: 'Market Intel' },
+    { color: 0x7A9E7E, y: -1.0,  label: 'Presentation' },
+    { color: 0xB85C38, y: -2.0,  label: 'Bot Gateway' },
+    { color: 0x1C2B1E, y: -3.0,  label: 'External APIs' },
+  ];
+
+  const layerMeshes = [];
+  layers.forEach((l, i) => {
+    const w = 7 - i * 0.1;
+    const geo = new THREE.BoxGeometry(w, 0.55, 1.5);
+    const mat = new THREE.MeshStandardMaterial({ color: l.color, roughness: 0.6, metalness: 0.1, transparent: true, opacity: 0.92 });
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.position.set(0, l.y, 0);
+    scene.add(mesh);
+    layerMeshes.push(mesh);
+
+    // Data flow dots
+    for (let j = 0; j < 3; j++) {
+      const dotGeo = new THREE.SphereGeometry(0.07, 8, 8);
+      const dotMat = new THREE.MeshStandardMaterial({ color: 0xEDD38A, emissive: 0xD4A853, emissiveIntensity: 0.5 });
+      const dot = new THREE.Mesh(dotGeo, dotMat);
+      dot.position.set(-2 + j * 2, l.y, 0.9);
+      dot.userData = { baseY: l.y, offset: j * Math.PI * 0.66 };
+      scene.add(dot);
+    }
+  });
+
+  function resize() {
+    const w = canvas.parentElement.clientWidth;
+    const h = 360;
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  let t = 0;
+  const dots = scene.children.filter(c => c.geometry && c.geometry.type === 'SphereGeometry');
+  function animate() {
+    requestAnimationFrame(animate);
+    t += 0.02;
+    dots.forEach(dot => {
+      dot.position.y = dot.userData.baseY + Math.sin(t + dot.userData.offset) * 0.12;
+    });
+    layerMeshes.forEach((m, i) => {
+      m.position.x = Math.sin(t * 0.3 + i * 0.5) * 0.08;
+    });
+    renderer.render(scene, camera);
+  }
+  animate();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,196 @@
+/* ──────────────────────────────────────────
+   MarketSection — 60vh asymmetric layout
+   ────────────────────────────────────────── */
+
+.market-section {
+    min-height: 60vh;
+    background: var(--color-bg);
+    position: relative;
+    overflow: hidden;
+}
+
+.market-section__inner {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 100px 48px;
+    display: grid;
+    grid-template-columns: 35fr 65fr;
+    gap: 0;
+    min-height: 60vh;
+    position: relative;
+}
+
+/* Vertical stripe at 35% */
+.market-section__stripe {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: calc(35% + 48px);
+    width: 2px;
+    background: rgba(42, 61, 46, 0.3);
+    pointer-events: none;
+}
+
+/* Left — negative space + rotated label */
+.market-section__left {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    overflow: visible;
+}
+
+/* Rotated "MARKET" — decorative, 5% opacity  */
+.market-section__vert-text {
+    font-family: var(--font-display);
+    font-size: 90px;
+    font-weight: 600;
+    color: var(--color-green-dark);
+    opacity: 0.05;
+    transform: rotate(-90deg);
+    transform-origin: center center;
+    white-space: nowrap;
+    letter-spacing: -0.02em;
+    display: block;
+    line-height: 1;
+    user-select: none;
+}
+
+/* Right — main content */
+.market-section__right {
+    padding-left: 64px;
+    display: flex;
+    flex-direction: column;
+}
+
+.market-right__label {
+    font-family: var(--font-mono);
+    font-size: 0.58rem;
+    font-weight: 400;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-green-accent);
+    display: block;
+    margin-bottom: 24px;
+}
+
+.market-right__headline {
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 3vw, 2.5rem);
+    font-weight: 600;
+    color: var(--color-text-hero);
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+    margin-bottom: 24px;
+    max-width: 22ch;
+}
+
+.market-right__body {
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    font-weight: 300;
+    color: var(--color-text-body);
+    line-height: 1.75;
+    max-width: 52ch;
+    margin-bottom: 16px;
+}
+
+/* Formula — displayed as typographic element */
+.market-right__formula {
+    font-family: var(--font-mono);
+    font-size: clamp(0.75rem, 1.1vw, 0.875rem);
+    font-weight: 400;
+    color: var(--color-text-hero);
+    letter-spacing: 0.02em;
+    padding: 24px 0;
+    line-height: 1.4;
+    border-top: 1px solid var(--color-rule);
+    border-bottom: 1px solid var(--color-rule);
+    margin: 24px 0 0;
+    max-width: 56ch;
+}
+
+/* Bridge spacer + hairline between formula and price table */
+.market-right__bridge {
+    margin: 0 0 0;
+    height: 32px;
+    position: relative;
+    max-width: 52ch;
+}
+
+.market-right__bridge::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--color-rule);
+}
+
+/* Price feed */
+.market-price-feed {
+    border: 1px solid var(--color-rule);
+    border-top: none;
+    /* joins bridge rule */
+    max-width: 52ch;
+    margin-bottom: 0;
+}
+
+.market-price-feed__header {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 0.8fr;
+    padding: 8px 14px;
+    background: rgba(42, 61, 46, 0.04);
+    border-bottom: 1px solid var(--color-rule);
+    font-family: var(--font-mono);
+    font-size: 0.5rem;
+    font-weight: 400;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--color-text-light);
+}
+
+.market-price-feed__row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 0.8fr;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--color-rule);
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    align-items: center;
+    transition: background 0.15s ease;
+}
+
+.market-price-feed__row:last-child {
+    border-bottom: none;
+}
+
+.market-price-feed__row:hover {
+    background: rgba(42, 61, 46, 0.03);
+}
+
+.mpf__crop {
+    color: var(--color-text-hero);
+    font-weight: 400;
+    letter-spacing: 0.04em;
+}
+
+.mpf__msp,
+.mpf__mandi {
+    color: var(--color-text-body);
+    font-size: 0.6rem;
+    letter-spacing: 0.03em;
+}
+
+.mpf__delta {
+    font-weight: 400;
+    letter-spacing: 0.05em;
+}
+
+.mpf__delta--up {
+    color: var(--color-green-accent);
+}
+
+.mpf__delta--down {
+    color: #8a6a4a;
+}

@@ -1,0 +1,96 @@
+/* ──────────────────────────────────────────
+   Navbar — thin floating bar
+   ────────────────────────────────────────── */
+
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    height: var(--nav-height);
+    display: flex;
+    align-items: center;
+    padding: 0 48px;
+    gap: 0;
+    /* Invisible on fresh load — floats over hero */
+    background: transparent;
+    transition: background 0.35s ease, backdrop-filter 0.35s ease;
+}
+
+.navbar--scrolled {
+    background: rgba(245, 243, 238, 0.78);
+    backdrop-filter: blur(14px) saturate(1.4);
+    -webkit-backdrop-filter: blur(14px) saturate(1.4);
+}
+
+/* Hairline rule below nav */
+.navbar::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 48px;
+    right: 48px;
+    height: 1px;
+    background: var(--color-rule);
+}
+
+/* ── Logo ── */
+.navbar__logo {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: var(--color-green-dark);
+    text-decoration: none;
+    letter-spacing: -0.01em;
+    flex-shrink: 0;
+}
+
+.navbar__logo-x {
+    color: var(--color-green-accent);
+}
+
+/* ── Nav links ── */
+.navbar__links {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 36px;
+    margin-left: auto;
+    margin-right: 36px;
+}
+
+.navbar__link {
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    font-weight: 400;
+    color: var(--color-green-dark);
+    text-decoration: none;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    transition: color 0.2s ease;
+}
+
+.navbar__link:hover {
+    color: var(--color-green-accent);
+}
+
+/* ── CTA ghost button ── */
+.navbar__cta {
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    font-weight: 400;
+    color: var(--color-green-dark);
+    text-decoration: none;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    border: 1px solid var(--color-green-dark);
+    padding: 8px 18px;
+    flex-shrink: 0;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.navbar__cta:hover {
+    background: var(--color-green-dark);
+    color: var(--color-bg);
+}

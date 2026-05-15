@@ -1,0 +1,74 @@
+/* ──────────────────────────────────────────
+   CROPXPERT — Global Design Tokens & Reset
+   ────────────────────────────────────────── */
+
+/* Fonts */
+:root {
+  /* Fonts */
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+
+  /* Color System ─ Muted desaturated greens */
+  --color-bg: #f5f3ee;          /* aged linen / seed paper */
+  --color-surface: #f0ede6;     /* slightly warmer surface */
+  --color-green-dark: #2a3d2e;  /* deep moss / aged verdigris */
+  --color-green-mid: #4a6351;   /* mid moss for borders */
+  --color-green-accent: #5c7a42;/* warmer, more saturated — interactive only */
+  --color-text-hero: #243328;   /* headline, almost dark-moss */
+  --color-text-body: #4a4640;   /* warm dark grey — recedes behind headline */
+  --color-text-light: #7a7568;  /* secondary / captions */
+  --color-rule: rgba(42, 61, 46, 0.2); /* hairline borders */
+  --color-rule-accent: rgba(92, 122, 66, 0.5);
+  --color-ghost: rgba(42, 61, 46, 0.04); /* background ghost numeral */
+
+  /* Spacing */
+  --nav-height: 52px;
+  --max-width: 1400px;
+}
+
+/* Reset */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text-body);
+  font-family: var(--font-body);
+  font-weight: 300;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--color-bg); }
+::-webkit-scrollbar-thumb { background: var(--color-green-mid); }
+
+/* Utility — visually hidden */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+}
+
+/* Utility — hairline rule */
+.rule {
+  display: block;
+  height: 1px;
+  background: var(--color-rule);
+  border: none;
+}

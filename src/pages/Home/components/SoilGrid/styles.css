@@ -1,0 +1,110 @@
+/* ──────────────────────────────────────────
+   SoilGrid — abstract soil cross-section
+   ────────────────────────────────────────── */
+
+.soil-grid {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: stretch;
+}
+
+/* Ghost numeral — behind everything, bleeding off right edge */
+.soil-grid__ghost {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    /* Shift right so numeral bleeds ~30% off-screen */
+    transform: translateX(30%);
+    font-family: var(--font-display);
+    font-size: clamp(200px, 32vw, 420px);
+    font-weight: 700;
+    color: var(--color-green-dark);
+    opacity: 0.03;
+    line-height: 1;
+    pointer-events: none;
+    user-select: none;
+    letter-spacing: -0.05em;
+    z-index: 0;
+}
+
+/* SVG fills the left portion */
+.soil-grid__svg {
+    flex: 1;
+    height: 100%;
+    z-index: 1;
+    position: relative;
+    overflow: visible;
+}
+
+/* ── Reticle pulse animations ──
+   Use transform-box: fill-box + transform-origin: center
+   so scale() pivots around the circle's own centre, not SVG root */
+.reticle-ring-1,
+.reticle-ring-2 {
+    transform-box: fill-box;
+    transform-origin: center;
+}
+
+.reticle-ring-1 {
+    animation: reticle-pulse 2.4s ease-out infinite;
+}
+
+.reticle-ring-2 {
+    animation: reticle-pulse 2.4s ease-out infinite 0.6s;
+}
+
+@keyframes reticle-pulse {
+    0% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+
+    80% {
+        transform: scale(2.8);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(2.8);
+        opacity: 0;
+    }
+}
+
+/* Layer annotations */
+.soil-grid__annotations {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    padding: 5% 0;
+    z-index: 2;
+}
+
+.soil-grid__annotation {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 0.575rem;
+    font-weight: 300;
+    color: var(--color-text-light);
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+}
+
+.soil-grid__annotation-dot {
+    display: inline-block;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--color-green-accent);
+    opacity: 0.6;
+    flex-shrink: 0;
+}

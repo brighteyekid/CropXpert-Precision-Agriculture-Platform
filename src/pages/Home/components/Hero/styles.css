@@ -1,0 +1,49 @@
+/* ──────────────────────────────────────────
+   Hero — two-column asymmetric layout
+   ────────────────────────────────────────── */
+
+.hero {
+    position: relative;
+    min-height: 100vh;
+    padding-top: var(--nav-height);
+    overflow: hidden;
+}
+
+.hero__inner {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 80px 48px 80px;
+    display: grid;
+    grid-template-columns: 60fr 40fr;
+    align-items: center;
+    min-height: calc(100vh - var(--nav-height));
+    gap: 0;
+    position: relative;
+}
+
+.hero__left {
+    position: relative;
+    z-index: 2;
+    padding-right: 40px;
+}
+
+.hero__right {
+    position: relative;
+    z-index: 1;
+    height: 600px;
+    /* Slight overlap bleed — visual continues under text */
+    margin-left: -5%;
+}
+
+/* Responsive: stack on smaller screens */
+@media (max-width: 900px) {
+    .hero__inner {
+        grid-template-columns: 1fr;
+        gap: 60px;
+    }
+
+    .hero__right {
+        height: 400px;
+        margin-left: 0;
+    }
+}

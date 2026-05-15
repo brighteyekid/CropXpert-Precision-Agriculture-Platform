@@ -1,0 +1,12 @@
+/* ──────────────────────────────────────────
+   HeroVisual — right column (40%)
+   ────────────────────────────────────────── */
+
+.hero-visual {
+    position: relative;
+    height: 100%;
+    /* Bleeds slightly behind the text column */
+    margin-left: -60px;
+    z-index: 1;
+    overflow: visible;
+}

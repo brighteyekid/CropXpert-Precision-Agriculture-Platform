@@ -1,0 +1,258 @@
+/* ──────────────────────────────────────────
+   MultilingualSection — split dark/light
+   ────────────────────────────────────────── */
+
+.multilingual {
+    background: var(--color-bg);
+}
+
+.multilingual__inner {
+    display: grid;
+    grid-template-columns: 45fr 55fr;
+    min-height: 100vh;
+}
+
+/* ── Dark panel (left 45%) ── */
+.multilingual__dark-panel {
+    background: #1a2b1e;
+    background-image: linear-gradient(180deg, #1e3024 0%, #162219 100%);
+    display: flex;
+    flex-direction: column;
+    padding: 80px 48px 60px;
+    position: relative;
+    overflow: hidden;
+}
+
+.ml-panel__eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.56rem;
+    font-weight: 400;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-green-accent);
+    margin-bottom: 48px;
+    display: block;
+}
+
+/* Language blocks */
+.ml-panel__blocks {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.ml-block {
+    padding: 20px 0 20px 16px;
+    cursor: pointer;
+    opacity: 0.55;
+    transition: opacity 0.2s ease;
+    border-left: 2px solid transparent;
+}
+
+.ml-block:hover {
+    opacity: 0.8;
+}
+
+.ml-block--active {
+    opacity: 1;
+    border-left-color: var(--color-green-accent);
+}
+
+.ml-block__lang {
+    font-family: var(--font-mono);
+    font-size: 0.52rem;
+    font-weight: 400;
+    letter-spacing: 0.18em;
+    color: rgba(240, 237, 228, 0.5);
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.ml-block--active .ml-block__lang {
+    color: var(--color-green-accent);
+}
+
+.ml-block__phrase {
+    font-size: 1.15rem;
+    font-weight: 400;
+    color: #f0ede4;
+    line-height: 1.5;
+    letter-spacing: 0.01em;
+}
+
+.ml-block__rule {
+    height: 1px;
+    background: rgba(240, 237, 228, 0.1);
+    margin-top: 20px;
+}
+
+/* Language tabs */
+.ml-panel__tabs {
+    display: flex;
+    gap: 6px;
+    margin-top: 40px;
+    flex-wrap: wrap;
+}
+
+.ml-tab {
+    font-family: var(--font-mono);
+    font-size: 0.58rem;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    color: rgba(240, 237, 228, 0.6);
+    background: transparent;
+    border: 1px solid rgba(240, 237, 228, 0.2);
+    padding: 7px 12px;
+    cursor: pointer;
+    transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+}
+
+.ml-tab--active {
+    background: var(--color-green-accent);
+    color: var(--color-green-dark);
+    border-color: var(--color-green-accent);
+}
+
+.ml-tab:hover:not(.ml-tab--active) {
+    border-color: rgba(240, 237, 228, 0.45);
+    color: rgba(240, 237, 228, 0.9);
+}
+
+/* ── Light panel (right 55%) ── */
+.multilingual__light-panel {
+    background: var(--color-bg);
+    padding: 80px 64px 60px 56px;
+    display: flex;
+    flex-direction: column;
+}
+
+.ml-right__label {
+    font-family: var(--font-mono);
+    font-size: 0.58rem;
+    font-weight: 400;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-green-accent);
+    display: block;
+    margin-bottom: 24px;
+}
+
+.ml-right__headline {
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 3vw, 2.75rem);
+    font-weight: 600;
+    color: var(--color-text-hero);
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+    margin-bottom: 28px;
+    max-width: 18ch;
+}
+
+.ml-right__body {
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    font-weight: 300;
+    color: var(--color-text-body);
+    line-height: 1.75;
+    max-width: 54ch;
+    margin-bottom: 40px;
+}
+
+/* 2×2 coverage cards */
+.ml-right__cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--color-rule);
+    border: 1px solid var(--color-rule);
+    margin-bottom: 32px;
+}
+
+.ml-coverage-card {
+    background: var(--color-bg);
+    padding: 20px 20px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.ml-coverage-card__lang {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: var(--color-text-hero);
+    letter-spacing: -0.01em;
+}
+
+.ml-coverage-card__states {
+    font-family: var(--font-mono);
+    font-size: 0.52rem;
+    font-weight: 300;
+    color: var(--color-text-light);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.ml-coverage-card__speakers {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    font-weight: 400;
+    color: var(--color-green-accent);
+    letter-spacing: 0.06em;
+    margin-top: 4px;
+}
+
+/* SMS band — fixed, fully visible */
+.ml-sms-band {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 20px 20px 22px;
+    /* extra bottom padding so it doesn't clip */
+    background: rgba(42, 61, 46, 0.04);
+    border: 1px solid var(--color-rule);
+    margin-top: auto;
+    flex-shrink: 0;
+    /* prevent flex compression */
+}
+
+.ml-sms-band__left {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.ml-sms-band__label {
+    font-family: var(--font-mono);
+    font-size: 0.52rem;
+    font-weight: 400;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--color-text-light);
+}
+
+.ml-sms-band__code {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    color: var(--color-text-hero);
+    background: rgba(42, 61, 46, 0.08);
+    border: 1px solid var(--color-rule);
+    padding: 6px 12px;
+    display: inline-block;
+}
+
+.ml-sms-band__note {
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    font-weight: 300;
+    color: var(--color-text-light);
+    text-align: right;
+    max-width: 16ch;
+    line-height: 1.5;
+    flex-shrink: 0;
+}

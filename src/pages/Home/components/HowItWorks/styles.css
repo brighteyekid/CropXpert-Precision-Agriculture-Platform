@@ -1,0 +1,311 @@
+/* ──────────────────────────────────────────
+   HowItWorks — zigzag process section
+   ────────────────────────────────────────── */
+
+.how-it-works {
+    min-height: 100vh;
+    background: var(--color-bg);
+    padding: 100px 0 120px;
+}
+
+.how-it-works__inner {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 48px;
+}
+
+/* ── Section header ── */
+.hiw-header {
+    margin-bottom: 80px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.hiw-header::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--color-rule);
+}
+
+.hiw-header__label {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    font-weight: 400;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-green-accent);
+    white-space: nowrap;
+}
+
+/* ── Step wrapper ── */
+.hiw-step {
+    position: relative;
+    display: grid;
+    /* Content + diagram as columns, both stretch to same height */
+    grid-template-columns: 1fr 220px;
+    grid-template-rows: auto;
+    align-items: start;
+    gap: 60px;
+    padding: 60px 0 20px;
+}
+
+/* Right-aligned step: flip column order */
+.hiw-step--right {
+    grid-template-columns: 220px 1fr;
+}
+
+/* Connector spans full grid */
+.hiw-connector {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    margin-bottom: 0;
+    margin-top: -20px;
+}
+
+.hiw-connector__line {
+    flex: 1;
+    height: 1px;
+    border-top: 1px dashed rgba(42, 61, 46, 0.25);
+}
+
+/* CSS chevron arrow — right-pointing triangle */
+.hiw-connector__chevron {
+    width: 0;
+    height: 0;
+    border-top: 6px solid transparent;
+    border-bottom: 6px solid transparent;
+    border-left: 8px solid rgba(42, 61, 46, 0.3);
+    flex-shrink: 0;
+}
+
+/* ── Step content ── */
+.hiw-step__content {
+    position: relative;
+    /* On right-aligned steps, content goes to column 2 */
+}
+
+.hiw-step--right .hiw-step__content {
+    grid-column: 2;
+    grid-row: 1;
+}
+
+.hiw-step--right .hiw-step__diagram {
+    grid-column: 1;
+    grid-row: 1;
+}
+
+/* Ghost numeral */
+.hiw-step__ghost-num {
+    position: absolute;
+    top: -50px;
+    left: -10px;
+    font-family: var(--font-display);
+    font-size: 140px;
+    font-weight: 700;
+    font-style: italic;
+    color: var(--color-green-accent);
+    opacity: 0.18;
+    line-height: 1;
+    pointer-events: none;
+    user-select: none;
+    letter-spacing: -0.05em;
+    z-index: 0;
+}
+
+.hiw-step--right .hiw-step__ghost-num {
+    left: auto;
+    right: -10px;
+}
+
+.hiw-step__label {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 0.58rem;
+    font-weight: 400;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-green-accent);
+    margin-bottom: 14px;
+    position: relative;
+    z-index: 1;
+}
+
+.hiw-step__headline {
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 2.2vw, 2rem);
+    font-weight: 500;
+    color: var(--color-text-hero);
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    margin-bottom: 16px;
+    position: relative;
+    z-index: 1;
+}
+
+.hiw-step__body {
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    font-weight: 300;
+    color: var(--color-text-body);
+    line-height: 1.75;
+    max-width: 42ch;
+    position: relative;
+    z-index: 1;
+}
+
+/* ── Diagram column — vertically aligned at top with content ── */
+.hiw-step__diagram {
+    display: flex;
+    align-items: flex-start;
+    padding-top: 52px;
+    /* align with first line of content below label */
+}
+
+/* ── CSS diagrams ── */
+.hw-diagram {
+    width: 100%;
+}
+
+/* Soil band cross-section */
+.hw-diagram--soil {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--color-rule);
+    height: 160px;
+}
+
+.hw-diagram__band {
+    flex: 1;
+    position: relative;
+    border-bottom: 1px solid var(--color-rule);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 8px;
+}
+
+.hw-diagram__band:last-child {
+    border-bottom: none;
+}
+
+.hw-diagram__band-label {
+    font-family: var(--font-mono);
+    font-size: 0.5rem;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    color: var(--color-text-light);
+}
+
+/* Bar chart */
+.hw-diagram--bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    height: 140px;
+    padding-top: 20px;
+    border-bottom: 1px solid var(--color-rule);
+}
+
+.hw-diagram__bar-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    height: 100%;
+    gap: 3px;
+}
+
+.hw-diagram__bar-label {
+    font-family: var(--font-mono);
+    font-size: 0.45rem;
+    color: var(--color-text-light);
+    letter-spacing: 0.05em;
+}
+
+.hw-diagram__bar-label--accent {
+    color: var(--color-green-accent);
+    font-weight: 400;
+}
+
+.hw-diagram__bar {
+    width: 100%;
+    background: var(--color-green-mid);
+    opacity: 0.45;
+}
+
+.hw-diagram__bar--accent {
+    background: var(--color-green-accent);
+    opacity: 1;
+}
+
+/* Rank card — rotated 1.5deg */
+.hw-diagram--rank {
+    border: 1px solid var(--color-rule);
+    transform: rotate(1.5deg);
+    transform-origin: top right;
+}
+
+.hw-diagram__rank-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 14px;
+    border-bottom: 1px solid var(--color-rule);
+    font-family: var(--font-mono);
+    font-size: 0.58rem;
+}
+
+.hw-diagram__rank-row:last-child {
+    border-bottom: none;
+}
+
+.hw-diagram__rank-row--top {
+    border-left: 2px solid var(--color-green-accent);
+    padding-left: 12px;
+}
+
+.hw-diagram__rank-num {
+    color: var(--color-green-accent);
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    flex-shrink: 0;
+}
+
+.hw-diagram__rank-name {
+    color: var(--color-text-hero);
+    flex: 1;
+    letter-spacing: 0.08em;
+}
+
+.hw-diagram__rank-price {
+    color: var(--color-text-light);
+    font-size: 0.5rem;
+}
+
+/* ── Pull quote ── */
+.hiw-pullquote {
+    margin-top: 80px;
+    text-align: center;
+}
+
+.hiw-pullquote__rule {
+    border: none;
+    border-top: 1px solid var(--color-rule);
+    margin: 0 0 0 0;
+}
+
+.hiw-pullquote__text {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(1.15rem, 1.8vw, 1.6rem);
+    font-weight: 400;
+    color: var(--color-text-hero);
+    line-height: 1.45;
+    max-width: 60%;
+    margin: 48px auto;
+    letter-spacing: -0.01em;
+}

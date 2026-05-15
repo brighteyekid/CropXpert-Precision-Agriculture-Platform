@@ -1,0 +1,149 @@
+\documentclass[12pt,a4paper]{article}
+
+\usepackage[margin=1in, top=1.1in, bottom=1.1in]{geometry}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{setspace}
+\usepackage{array}
+\usepackage{booktabs}
+
+\hypersetup{colorlinks=true, linkcolor=blue, citecolor=blue, urlcolor=blue}
+
+\definecolor{srmblue}{RGB}{0, 51, 102}
+\definecolor{lightgray}{RGB}{245,245,245}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textcolor{srmblue}{\textbf{SRM Institute of Science and Technology}}}
+\fancyhead[R]{\small\textcolor{srmblue}{Minor Project --- 2024--25}}
+\fancyfoot[C]{\small\thepage}
+\fancyfoot[R]{\small\textcolor{gray}{CropXpert --- Dept. of CINTEL}}
+\renewcommand{\headrulewidth}{1pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{srmblue}\leaders\hrule height \headrulewidth\hfill}}
+
+\begin{document}
+
+%% ---- HEADER BLOCK ----
+\begin{center}
+
+{\color{srmblue}\rule{\linewidth}{2pt}}
+\vspace{0.4em}
+
+{\Large\bfseries\color{srmblue}
+SRM Institute of Science and Technology\\[2pt]
+Kattankulathur, Chennai --- 603 203, Tamil Nadu, India}
+
+\vspace{0.3em}
+{\normalsize Department of Computer Science and Intelligent Systems (CINTEL)}
+
+{\color{srmblue}\rule{\linewidth}{1pt}}
+
+\vspace{0.6em}
+
+{\LARGE\bfseries CropXpert}\\[4pt]
+{\large\itshape An IoT-Enabled, Machine Learning-Driven Precision Agriculture\\
+Platform with Multilingual Farmer Support Portal}
+
+\vspace{0.7em}
+
+\begin{tabular}{rl}
+\textbf{Team Members:} & Adnan Nagdiwala \hspace{1em} RA2311026010119 \\
+                       & Chandra Bhayal  \hspace{1.5em} RA2311026010072 \\[4pt]
+\textbf{Guide:}        & Dr. R. Siva, Department of CINTEL, SRMIST \\[4pt]
+\textbf{Domain:}       & IoT $+$ Machine Learning $+$ Web Development \\[4pt]
+\textbf{Status:}       & \textcolor{green!50!black}{\textbf{Guide Accepted}} \\
+\end{tabular}
+
+\vspace{0.5em}
+{\color{srmblue}\rule{\linewidth}{2pt}}
+
+\end{center}
+
+\vspace{0.8em}
+
+%% ---- ABSTRACT ----
+\begin{center}
+{\large\bfseries\scshape Abstract}
+\end{center}
+
+\noindent\rule{\linewidth}{0.4pt}
+\vspace{0.3em}
+
+\begin{spacing}{1.25}
+\noindent
+Indian agriculture, the livelihood of over 58\% of the rural population and a contributor of approximately 17--18\% to national GDP, continues to suffer from low productivity arising from uninformed crop selection, unscientific fertilizer usage, soil nutrient depletion, and widespread ignorance of government welfare schemes. Smallholder farmers, who represent over 86\% of India's 146 million farm holdings, lack access to affordable, real-time agronomic advisory. This paper presents \textbf{CropXpert}, an integrated IoT and machine learning platform purpose-built for Indian smallholder farmers, developed at the Department of Computer Science and Intelligent Systems (CINTEL), SRM Institute of Science and Technology, Kattankulathur, under the guidance of Dr.~R.~Siva.
+
+\vspace{0.6em}
+\noindent
+The system comprises three tightly coupled modules: \textbf{(1)} a real-time sensor array --- RS485 NPK sensor, analog soil pH sensor, capacitive soil moisture sensor, and DHT22 temperature/humidity sensor --- interfaced with an Arduino UNO / ESP32 microcontroller; \textbf{(2)} a Random Forest Classifier trained on seven agro-climatic features (Nitrogen, Phosphorus, Potassium, pH, Soil Moisture, Temperature, and Average Rainfall) achieving \textbf{99.2\% prediction accuracy} across 22 Indian crop categories; and \textbf{(3)} a multilingual Farmer Support Portal delivering real-time government scheme updates (PM-KISAN, PM Fasal Bima Yojana, Soil Health Card Scheme, Kisan Credit Card), zero-interest loan guidance (NABARD, KCC), and a WhatsApp/SMS CropBot for zero-smartphone access in rural areas.
+
+\vspace{0.6em}
+\noindent
+CropXpert introduces three novel contributions absent from prior literature: a \textit{market-aware recommendation engine} that cross-references ML crop predictions with live Minimum Support Price (MSP) data from the Government of India's AGMARKNET portal; a \textit{vernacular-first interface} supporting Hindi, Marathi, Tamil, and Telugu covering over 400 million Indian farmers; and a \textit{LoRa + ESP32 extension architecture} enabling 5--15 km offline data transmission for the estimated 31\% of Indian villages that lack reliable mobile internet connectivity. Total hardware cost is approximately \textbf{INR 3,600}, making the system cost-competitive with a single round of conventional soil laboratory testing while remaining permanently reusable.
+
+\vspace{0.6em}
+\noindent
+Developed as a Minor Project under the IoT, Machine Learning, and Web Development domain, CropXpert transforms fragmented, inaccessible agricultural intelligence into a single, affordable, farmer-ready platform that speaks the farmer's language, knows their soil, and watches the market on their behalf --- representing a significant step toward democratizing precision agriculture for India's 100 million smallholder farmers.
+\end{spacing}
+
+\vspace{0.5em}
+\noindent\rule{\linewidth}{0.4pt}
+
+\vspace{0.8em}
+
+%% ---- KEYWORDS ----
+\noindent\textbf{Keywords:}\enspace
+Precision Agriculture;\enspace Crop Recommendation;\enspace IoT;\enspace Random Forest;\enspace
+NPK Sensor;\enspace Arduino;\enspace ESP32;\enspace LoRa;\enspace AGMARKNET;\enspace
+Multilingual Interface;\enspace Farmer Support Portal;\enspace WhatsApp Bot;\enspace
+Smart Farming;\enspace Indian Agriculture
+
+\vspace{1.2em}
+
+%% ---- QUICK SPECS TABLE ----
+\begin{center}
+{\large\bfseries\scshape System at a Glance}
+\end{center}
+\noindent\rule{\linewidth}{0.4pt}
+\vspace{0.3em}
+
+\begin{center}
+\begin{tabular}{>{\bfseries}p{4.2cm} p{9.5cm}}
+\toprule
+Sensors & NPK (RS485), Soil pH, Soil Moisture (Capacitive), DHT22 Temp/Humidity \\
+\midrule
+Input Features & N, P, K, pH, Moisture, Temperature, Avg.\ Rainfall (7 features) \\
+\midrule
+ML Model & Random Forest Classifier --- 99.2\% accuracy, 22 Indian crops, 2.3 ms inference \\
+\midrule
+Market Layer & Live MSP + mandi prices via AGMARKNET API \\
+\midrule
+Languages & Hindi, Marathi, Tamil, Telugu (auto-detected) \\
+\midrule
+Bot Access & WhatsApp (Twilio) + SMS shortcode --- works on basic keypad phones \\
+\midrule
+Govt.\ Schemes & PM-KISAN, PM Fasal Bima Yojana, KCC, NABARD, Soil Health Card \\
+\midrule
+Hardware Cost & $\approx$ INR 3,600 (current) $\mid$ $\approx$ INR 5,100 with LoRa extension \\
+\midrule
+Future Extension & LoRa SX1276 + ESP32 for 5--15 km offline rural deployment \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\vspace{1.5em}
+
+%% ---- FOOTER SIGNATURE ----
+\begin{center}
+{\color{srmblue}\rule{\linewidth}{1pt}}\\[4pt]
+{\small\textit{Minor Project | Academic Year 2024--25 | Dept.\ of CINTEL | SRMIST Kattankulathur}}\\[2pt]
+{\small Guide: Dr.\ R.\ Siva \hspace{2em} Team: Adnan Nagdiwala (119) \& Chandra Bhayal (072)}\\[4pt]
+{\color{srmblue}\rule{\linewidth}{1pt}}
+\end{center}
+
+\end{document}

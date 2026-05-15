@@ -1,0 +1,592 @@
+/* ──────────────────────────────────────────
+   Onboarding — 3-step field intake flow
+   ────────────────────────────────────────── */
+
+/* ── Root layout ── */
+.onboarding {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 38fr 62fr;
+}
+
+/* ── Left panel ── */
+.ob-left {
+    background: #1a2b1e;
+    display: flex;
+    flex-direction: column;
+    padding: 40px 40px 40px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.ob-left__wordmark {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 500;
+    color: #f0ede4;
+    letter-spacing: -0.01em;
+    text-decoration: none;
+    display: block;
+    margin-bottom: 20px;
+}
+
+.ob-left__x {
+    color: var(--color-green-accent);
+}
+
+.ob-left__divider {
+    width: 100%;
+    height: 1px;
+    background: rgba(240, 237, 228, 0.12);
+    margin-bottom: 40px;
+}
+
+/* ── Step indicator ── */
+.step-indicator {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    flex: 1;
+}
+
+.si-item {
+    display: grid;
+    grid-template-columns: 20px 32px 1fr;
+    align-items: center;
+    gap: 0;
+    cursor: default;
+}
+
+.si-item--idle {
+    opacity: 0.3;
+}
+
+/* Marker column */
+.si-item__marker {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+}
+
+/* Active: 4px square rotated 45deg (diamond) */
+.si-item__diamond {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    background: var(--color-green-accent);
+    transform: rotate(45deg);
+    flex-shrink: 0;
+}
+
+/* Done: diagonal hairline stroke */
+.si-item__check {
+    display: inline-block;
+    width: 10px;
+    height: 6px;
+    border-left: 1px solid rgba(240, 237, 228, 0.5);
+    border-bottom: 1px solid rgba(240, 237, 228, 0.5);
+    transform: rotate(-45deg) translateY(-2px);
+}
+
+.si-item__num {
+    font-family: var(--font-mono);
+    font-size: 0.58rem;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    color: rgba(240, 237, 228, 0.6);
+}
+
+.si-item--active .si-item__num {
+    color: var(--color-green-accent);
+}
+
+.si-item__name {
+    font-family: var(--font-body);
+    font-size: 0.8125rem;
+    font-weight: 300;
+    color: #f0ede4;
+}
+
+/* Privacy note */
+.ob-left__privacy {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 300;
+    letter-spacing: 0.08em;
+    color: rgba(240, 237, 228, 0.3);
+    line-height: 1.6;
+    margin-top: auto;
+}
+
+/* ── Right panel ── */
+.ob-right {
+    background: var(--color-bg);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    position: relative;
+}
+
+.ob-right__lang {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 20px 48px 0;
+}
+
+/* Remove the left-border separator from the navbar variant when used here */
+.ob-right__lang .lang-nav {
+    border-left: none;
+    padding-left: 0;
+    margin-right: 0;
+}
+
+/* ── Step content ── */
+.ob-step {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 48px 64px 48px;
+}
+
+.ob-step__label {
+    font-family: var(--font-mono);
+    font-size: 0.56rem;
+    font-weight: 400;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-green-accent);
+    display: block;
+    margin-bottom: 16px;
+}
+
+.ob-step__headline {
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 3.5vw, 2.25rem);
+    font-weight: 500;
+    color: var(--color-text-hero);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 40px;
+    max-width: 18ch;
+}
+
+.ob-step__sub {
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    font-weight: 300;
+    color: var(--color-text-body);
+    line-height: 1.7;
+    max-width: 52ch;
+    margin-bottom: 32px;
+}
+
+/* ── Bottom-border-only input field ── */
+.ob-field {
+    position: relative;
+    margin-bottom: 32px;
+}
+
+.ob-field__float-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 400;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-text-light);
+    display: block;
+    margin-bottom: 4px;
+    transition: color 0.15s ease;
+}
+
+.ob-field__input {
+    display: block;
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid var(--color-green-dark);
+    padding: 10px 0;
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-style: italic;
+    font-weight: 400;
+    color: var(--color-text-hero);
+    outline: none;
+    border-radius: 0;
+    transition: border-color 0.2s ease;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.ob-field__input::placeholder {
+    color: rgba(42, 61, 46, 0.3);
+    font-style: italic;
+}
+
+.ob-field__input:focus {
+    border-bottom-color: var(--color-green-accent);
+}
+
+/* Auto-fetched field — accent green border */
+.ob-field--auto .ob-field__input {
+    border-bottom-color: var(--color-green-accent);
+    font-style: normal;
+    font-size: 16px;
+    font-family: var(--font-mono);
+    color: var(--color-text-body);
+}
+
+.ob-field__auto-note {
+    font-family: var(--font-mono);
+    font-size: 0.48rem;
+    font-weight: 300;
+    letter-spacing: 0.08em;
+    color: var(--color-green-accent);
+    display: block;
+    margin-bottom: 2px;
+}
+
+/* ── Autocomplete dropdown ── */
+.ob-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--color-bg);
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    z-index: 50;
+    border: 1px solid var(--color-rule);
+    border-top: none;
+}
+
+.ob-dropdown__item {
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    font-weight: 300;
+    color: var(--color-text-body);
+    padding: 11px 16px;
+    border-bottom: 1px solid var(--color-rule);
+    cursor: pointer;
+    transition: padding-left 0.15s ease, border-left 0.15s ease;
+}
+
+.ob-dropdown__item:last-child {
+    border-bottom: none;
+}
+
+.ob-dropdown__item:hover {
+    border-left: 2px solid var(--color-green-accent);
+    padding-left: 14px;
+}
+
+/* ── Geo button ── */
+.ob-geo-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid var(--color-rule);
+    background: transparent;
+    padding: 10px 20px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-text-light);
+    cursor: pointer;
+    transition: border-color 0.18s ease, color 0.18s ease;
+    margin-bottom: 48px;
+}
+
+.ob-geo-btn:hover {
+    border-color: var(--color-green-accent);
+    color: var(--color-green-accent);
+}
+
+/* Diamond geo indicator */
+.ob-geo-btn__diamond {
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    background: var(--color-green-accent);
+    transform: rotate(45deg);
+    flex-shrink: 0;
+}
+
+/* ── Step 2 fields row ── */
+.ob-fields-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+}
+
+/* ── Soil type visual selector ── */
+.ob-soil-selector {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1px;
+    background: var(--color-rule);
+    border: 1px solid var(--color-rule);
+    margin-bottom: 48px;
+}
+
+.ob-soil-btn {
+    background: var(--color-bg);
+    border: none;
+    padding: 14px 8px;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 400;
+    letter-spacing: 0.16em;
+    color: rgba(42, 61, 46, 0.6);
+    cursor: pointer;
+    transition: background 0.18s ease, color 0.18s ease;
+    text-align: center;
+}
+
+.ob-soil-btn--active {
+    background: var(--color-green-dark);
+    color: #f0ede4;
+}
+
+.ob-soil-btn:hover:not(.ob-soil-btn--active) {
+    background: rgba(42, 61, 46, 0.06);
+    color: var(--color-green-dark);
+}
+
+/* ── Step 3 soil input grid ── */
+.ob-soil-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 32px;
+    row-gap: 0;
+    margin-bottom: 16px;
+}
+
+/* ── Info band ── */
+.ob-info-band {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 300;
+    letter-spacing: 0.08em;
+    color: rgba(42, 61, 46, 0.5);
+    background: rgba(42, 61, 46, 0.03);
+    padding: 14px 20px;
+    line-height: 1.6;
+    margin-bottom: 48px;
+}
+
+/* ── Navigation row ── */
+.ob-nav {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 16px;
+    margin-top: auto;
+    padding-top: 40px;
+}
+
+.ob-nav--step1 {
+    margin-top: auto;
+}
+
+.ob-nav__counter {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    color: rgba(42, 61, 46, 0.4);
+}
+
+/* Forward button */
+.ob-next-btn {
+    font-family: var(--font-mono);
+    font-size: 0.58rem;
+    font-weight: 400;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #f0ede4;
+    background: var(--color-green-dark);
+    border: none;
+    padding: 14px 28px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.ob-next-btn:hover {
+    background: var(--color-green-accent);
+}
+
+.ob-next-btn--analyse {
+    padding: 14px 40px;
+    min-width: 200px;
+}
+
+.ob-next-btn--scanning {
+    cursor: not-allowed;
+    background: var(--color-green-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Scan-line inside the analyse button */
+.ob-scan-line {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ob-scan-line__track {
+    width: 80px;
+    height: 1px;
+    background: rgba(240, 237, 228, 0.25);
+    position: relative;
+    overflow: hidden;
+    display: block;
+}
+
+.ob-scan-line__bright {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 24px;
+    height: 1px;
+    background: rgba(240, 237, 228, 1);
+    animation: scan-move 1.2s linear infinite;
+}
+
+@keyframes scan-move {
+    0% {
+        transform: translateX(-24px);
+    }
+
+    100% {
+        transform: translateX(80px);
+    }
+}
+
+/* ── Back button ── */
+.ob-back-btn {
+    font-family: var(--font-mono);
+    font-size: 0.52rem;
+    font-weight: 300;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-text-light);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 10px 0;
+    transition: color 0.15s ease;
+    margin-right: auto;
+}
+
+.ob-back-btn:hover {
+    color: var(--color-green-accent);
+}
+
+/* ── Sensor connection band ── */
+.ob-sensor-band {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 28px;
+    padding: 16px 20px;
+    border: 1px solid var(--color-rule);
+    background: rgba(42, 61, 46, 0.02);
+}
+
+.ob-sensor-connect-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid var(--color-green-dark);
+    background: transparent;
+    padding: 10px 20px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-green-dark);
+    cursor: pointer;
+    transition: background 0.18s ease, color 0.18s ease;
+    align-self: flex-start;
+}
+
+.ob-sensor-connect-btn:hover {
+    background: var(--color-green-dark);
+    color: #f0ede4;
+}
+
+.ob-sensor-note {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 300;
+    letter-spacing: 0.08em;
+    color: var(--color-text-light);
+}
+
+.ob-sensor-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+}
+
+.ob-sensor-status--connecting {
+    color: #c8922a;
+}
+
+.ob-sensor-status--reading {
+    color: var(--color-green-accent);
+}
+
+.ob-sensor-status--done {
+    color: var(--color-green-accent);
+}
+
+/* ── Error band (in left sidebar) ── */
+.ob-error-band {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 14px 16px;
+    background: rgba(176, 90, 58, 0.15);
+    border-left: 2px solid #b05a3a;
+    margin-top: 24px;
+}
+
+.ob-error-band__icon {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    color: #b05a3a;
+    width: 16px;
+    height: 16px;
+    border: 1px solid #b05a3a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transform: rotate(45deg);
+}
+
+.ob-error-band__text {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 300;
+    letter-spacing: 0.06em;
+    color: rgba(240, 237, 228, 0.7);
+    line-height: 1.5;
+}

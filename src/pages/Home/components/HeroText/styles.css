@@ -1,0 +1,128 @@
+/* ──────────────────────────────────────────
+   HeroText — left column text area
+   ────────────────────────────────────────── */
+
+.hero-text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-top: 40px;
+    position: relative;
+    z-index: 2;
+}
+
+/* ── Eyebrow label ── */
+.hero-text__eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 28px;
+}
+
+.hero-text__label {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    font-weight: 400;
+    color: var(--color-green-accent);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.hero-text__label-rule {
+    display: inline-block;
+    width: 40px;
+    height: 1px;
+    background: var(--color-green-accent);
+    opacity: 0.5;
+    flex-shrink: 0;
+}
+
+/* ── Headline ── */
+.hero-text__headline {
+    font-family: var(--font-display);
+    font-size: clamp(3.5rem, 6.5vw, 7.5rem);
+    font-weight: 600;
+    color: var(--color-text-hero);
+    line-height: 1.02;
+    letter-spacing: -0.025em;
+    margin-bottom: 28px;
+}
+
+.hero-text__headline em {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--color-green-accent);
+}
+
+/* ── Sub-headline ── */
+.hero-text__subheadline {
+    font-family: var(--font-body);
+    font-size: clamp(0.95rem, 1.4vw, 1.2rem);
+    font-weight: 200;
+    color: var(--color-text-body);
+    line-height: 1.55;
+    max-width: 480px;
+    margin-bottom: 24px;
+}
+
+/* ── Accent rule (paragraph break) ── */
+.hero-text__accent-rule {
+    display: block;
+    width: 48px;
+    height: 1px;
+    background: var(--color-green-accent);
+    margin-bottom: 22px;
+}
+
+/* ── Body copy ── */
+.hero-text__body {
+    font-family: var(--font-body);
+    font-size: clamp(0.8rem, 1.1vw, 0.95rem);
+    font-weight: 300;
+    color: var(--color-text-body);
+    line-height: 1.75;
+    max-width: 52ch;
+    margin-bottom: 40px;
+}
+
+/* ── CTA row ── */
+.hero-text__cta-row {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+}
+
+.hero-text__btn-primary {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    font-weight: 400;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--color-bg);
+    background: var(--color-green-dark);
+    padding: 14px 28px;
+    display: inline-block;
+    transition: background 0.2s ease, color 0.2s ease;
+    flex-shrink: 0;
+}
+
+.hero-text__btn-primary:hover {
+    background: var(--color-green-accent);
+}
+
+.hero-text__btn-text {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    font-weight: 300;
+    letter-spacing: 0.12em;
+    text-decoration: none;
+    color: var(--color-green-accent);
+    transition: text-decoration 0.15s ease;
+}
+
+.hero-text__btn-text:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}

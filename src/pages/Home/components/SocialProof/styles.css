@@ -1,0 +1,190 @@
+/* ──────────────────────────────────────────
+   SocialProof — research credibility section
+   ────────────────────────────────────────── */
+
+.social-proof {
+    background: var(--color-bg);
+    padding: 100px 0 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.social-proof__inner {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 48px 100px;
+    display: grid;
+    grid-template-columns: 40fr 60fr;
+    gap: 80px;
+    position: relative;
+}
+
+/* Ghost numeral — spans center, behind everything */
+.sp-ghost {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -55%);
+    font-family: var(--font-display);
+    font-size: clamp(120px, 15vw, 180px);
+    font-weight: 700;
+    font-style: italic;
+    color: var(--color-green-dark);
+    opacity: 0.06;
+    line-height: 1;
+    pointer-events: none;
+    user-select: none;
+    letter-spacing: -0.04em;
+    white-space: nowrap;
+    z-index: 0;
+}
+
+/* ── Left column ── */
+.sp-left {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.sp-left__label {
+    font-family: var(--font-mono);
+    font-size: 0.56rem;
+    font-weight: 400;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-green-accent);
+    display: block;
+}
+
+.sp-left__headline {
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 3vw, 2.5rem);
+    font-weight: 600;
+    color: var(--color-text-hero);
+    line-height: 1.15;
+    letter-spacing: -0.025em;
+    max-width: 20ch;
+}
+
+.sp-left__body {
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    font-weight: 300;
+    color: var(--color-text-body);
+    line-height: 1.75;
+    max-width: 42ch;
+}
+
+/* Publication references */
+.sp-refs {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.sp-ref {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+/* Small accent-green square bullet */
+.sp-ref__bullet {
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    background: var(--color-green-accent);
+    flex-shrink: 0;
+    margin-top: 4px;
+}
+
+.sp-ref__text {
+    font-family: var(--font-mono);
+    font-size: 0.52rem;
+    font-weight: 300;
+    color: var(--color-text-light);
+    letter-spacing: 0.04em;
+    line-height: 1.5;
+}
+
+/* ── Right column — proof cards ── */
+.sp-right {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.sp-card {
+    border-top: 1px solid var(--color-rule);
+    padding: 28px 0 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    /* No background — floats on linen */
+}
+
+.sp-card__label {
+    font-family: var(--font-mono);
+    font-size: 0.52rem;
+    font-weight: 400;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-text-light);
+    display: block;
+}
+
+.sp-card__numeral-row {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+}
+
+.sp-card__numeral {
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 600;
+    color: var(--color-text-hero);
+    letter-spacing: -0.03em;
+    line-height: 1;
+}
+
+.sp-card__superscript {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 400;
+    color: var(--color-green-accent);
+    letter-spacing: 0.05em;
+}
+
+.sp-card__detail {
+    font-family: var(--font-mono);
+    font-size: 0.52rem;
+    font-weight: 300;
+    color: var(--color-text-light);
+    letter-spacing: 0.04em;
+    line-height: 1.5;
+}
+
+/* Quote strip */
+.sp-quote-strip {
+    border-top: 1px solid var(--color-rule);
+    /* Barely-different linen tint matching the multilingual SMS band */
+    background: rgba(42, 61, 46, 0.025);
+    padding: 28px 24px;
+    margin: 0 -24px;
+}
+
+.sp-quote {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(1rem, 1.5vw, 1.125rem);
+    font-weight: 400;
+    color: var(--color-text-hero);
+    line-height: 1.5;
+    text-align: center;
+    letter-spacing: -0.01em;
+}

@@ -1,0 +1,5 @@
+/* Home page — minimal wrapper, no extra chrome */
+.home {
+    min-height: 100vh;
+    background: var(--color-bg);
+}

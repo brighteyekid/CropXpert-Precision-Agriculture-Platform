@@ -1,0 +1,36 @@
+/* ──────────────────────────────────────────
+   LanguageBanner — confirmation slide-down
+   ────────────────────────────────────────── */
+
+.lang-banner {
+    position: fixed;
+    top: var(--nav-height);
+    left: 0;
+    right: 0;
+    z-index: 99;
+    background: #1a2b1e;
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    transition: max-height 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+        opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.lang-banner--visible {
+    max-height: 44px;
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.lang-banner__text {
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: rgba(240, 237, 228, 0.85);
+    text-align: center;
+    padding: 10px 48px;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

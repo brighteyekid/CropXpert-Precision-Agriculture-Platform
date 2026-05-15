@@ -1,0 +1,59 @@
+/* ──────────────────────────────────────────
+   DataStrip — three micro-stat blocks
+   ────────────────────────────────────────── */
+
+.data-strip {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    margin-top: 56px;
+}
+
+.stat-block {
+    display: flex;
+    flex-direction: column;
+    padding: 4px 28px 4px 16px;
+    border-left: 1px solid rgba(42, 61, 46, 0.15);
+    align-self: stretch;
+    min-width: 130px;
+}
+
+.stat-block:first-child {
+    padding-left: 0;
+    border-left: none;
+}
+
+.stat-block__numeral {
+    display: flex;
+    align-items: baseline;
+    gap: 3px;
+    line-height: 1;
+}
+
+.stat-block__number {
+    font-family: var(--font-display);
+    font-size: 2.8rem;
+    font-weight: 600;
+    color: var(--color-green-dark);
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+}
+
+.stat-block__unit {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 300;
+    color: var(--color-green-accent);
+    letter-spacing: 0.05em;
+}
+
+.stat-block__label {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    font-weight: 300;
+    color: var(--color-text-light);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-top: 6px;
+    line-height: 1.4;
+}
